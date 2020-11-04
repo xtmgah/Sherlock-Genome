@@ -1,7 +1,4 @@
----
-title: "Sherlock-Genome"
-output: html_document
----
+# Sherlock-Genome
 ## Sherlock-Genome: A R Shiny App for Genomic Analysis and Visualization
 
 Hello! And welcome to the Sherlock-Genome: A R Shiny App for Genomic Analysis and Visualization. This tool was developed in order to enable you (the user) to utilize analyses output from the Sherlock-lung study, a genomic epidemiologic study of lung cancer in those who never smoked.
