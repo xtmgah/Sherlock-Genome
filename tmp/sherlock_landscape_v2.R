@@ -45,7 +45,7 @@ landscape_colors <- c(landscape_colors,histcolor)
 
 #nbreaks=c(0,50,100,150,200,250)
 # Define the oncoplot funciton --------------------------------------------------------------
-oncoplot <- function(data,data_clone = NULL, Gene_Sig=NULL,landscape_colors=NULL,gene_level=NULL,sample_level=NULL,sample_level0=sample_level0,GeneSortOnly=FALSE,namemax=NULL,tmar=0,bmar=0,nbreaks=c(0,20,40,60,80),p2_axis_hidden=FALSE,p2_hidden=FALSE,cell_height=0.95,legend_adjust=FALSE){
+oncoplot <- function(data,data_clone = NULL, data_highlight = NULL, Gene_Sig=NULL,landscape_colors=NULL,gene_level=NULL,sample_level=NULL,sample_level0=sample_level0,GeneSortOnly=FALSE,namemax=NULL,tmar=0,bmar=0,nbreaks=c(0,20,40,60,80),p2_axis_hidden=FALSE,p2_hidden=FALSE,cell_height=0.95,legend_adjust=FALSE){
   
   # limited to sample level
   data <- data %>% filter(Tumor_Barcode %in% sample_level0)
@@ -158,6 +158,38 @@ oncoplot <- function(data,data_clone = NULL, Gene_Sig=NULL,landscape_colors=NULL
     geom_vline(xintercept = 1:samplesize-0.5,color="white",size=0.2)+
     panel_border(size = 0.3,color = 'gray70')+
     guides(fill = guide_legend(ncol = 1,title.position = "top",title=altertype))
+  
+  
+  ## highlight multiple samples according to data_highlight
+  ## highlight data can included both Tumor_Barcode and Gene, or just Tumor_Barcode
+  
+  if(!is.null(data_highlight)){
+    if(dim(data_highlight)[2]==1){
+      data_highlight <- data_highlight %>% 
+        left_join(
+          tibble(Tumor_Barcode=sample_level) %>% mutate(Seq=seq_along(Tumor_Barcode)) %>% mutate(Seq1=Seq-0.5,Seq2=Seq+0.5)
+        )
+      
+      # merged near-by samples
+      data_highlight <- data_highlight %>% arrange(Seq) %>% group_by(g = cumsum(cummax(lag(Seq2, default = first(Seq2))) < Seq1)) %>% 
+        summarise(Seq1 = first(Seq1), Seq2 = max(Seq2),Tumor_Barcode=first(Tumor_Barcode)) %>% mutate(Gene=NA) %>% 
+        mutate(Tumor_Barcode=factor(Tumor_Barcode,levels = sample_level)) %>% 
+        mutate(Gene=factor(Gene,levels = gene_level)) 
+      
+      p1 <- p1+geom_rect(data = data_highlight,aes(xmin=Seq1,xmax=Seq2,ymin=-Inf,ymax=Inf),fill=NA,col="black",size=0.3)
+      
+    } else {
+      
+      data_highlight <- data_highlight %>%
+        mutate(Tumor_Barcode=factor(Tumor_Barcode,levels = sample_level)) %>% 
+        mutate(Gene=factor(Gene,levels = gene_level)) 
+      
+      p1 <- p1+geom_tile(data = data_highlight,aes(Tumor_Barcode,as.integer(Gene)),fill=NA,col="black",size=0.6)
+      
+    }
+  }
+  
+  
   
   if(legend_adjust){
     p1 <- p1+guides(fill = guide_legend(nrow = 1,title.position = 'left',title.hjust = 0.5,title.vjust = 0.5))+theme(legend.position = "bottom")
@@ -332,6 +364,7 @@ oncoplot2 <- function(data,sample_level0,Gene_Sig=NULL, scale_fill_ztw=scale_fil
     geom_vline(xintercept = 1:samplesize-0.5,color="white",size=0.2)+
     panel_border(size = 0.3,color = 'gray70')+
     labs(fill=altertype)
+
   
   oncoplot_legend <- get_legend(p1+theme(plot.margin=margin(b=-12,l=0,r=0,unit="cm"),legend.key.size = unit(0.18, "cm")))
   #legend.box.margin = margin(t = 0, b = 0, l = 0, r = 0,unit = 'cm')
@@ -732,7 +765,7 @@ load('sherlock_drive_fusion.RData')
 #fgeneset2 <- sherlock_drive_fusion %>% count(Gene,Subject) %>% count(Gene,sort = T) %>% filter(n>1) %>% pull(Hugo_Symbol)
 #fgeneset <- unique(c(fgeneset1,fgeneset2))
 data_fusion <- sherlock_drive_fusion %>%
-#  filter(Gene %in% fgeneset) %>% 
+  #  filter(Gene %in% fgeneset) %>% 
   mutate(Alteration="Fusion",Type="Fusion") %>% 
   left_join(sherlock_samples_unique %>% select(Subject,Tumor_Barcode)) %>% 
   select(Subject,Tumor_Barcode,Gene,Alteration,Type) 
@@ -842,7 +875,7 @@ data_rtk <- sherlock_rtk %>%
 
 
 data_feature1 <- bind_rows(data_feature1,data_hla) %>% 
- # bind_rows(data_chr19loss) %>% 
+  # bind_rows(data_chr19loss) %>% 
   bind_rows(data_p53) %>% 
   bind_rows(data_rtk)
 
@@ -978,8 +1011,8 @@ save_plot(filename = 'Figures/Genome_landscape2.1.pdf',plot = oncoplot_final2,ba
 
 # TP53 + MDM2 -------------------------------------------------------------
 data_tmp <- bind_rows(
-data_top %>% filter(Gene %in% c('TP53','MDM2')),
-data_gistic %>% filter(Gene %in% c('TP53','MDM2'))
+  data_top %>% filter(Gene %in% c('TP53','MDM2')),
+  data_gistic %>% filter(Gene %in% c('TP53','MDM2'))
 )
 
 result_top <- oncoplot(data = data_tmp,landscape_colors = landscape_colors,sample_level0 = sample_level0,tmar = 0,bmar = -0.05)
@@ -1248,19 +1281,19 @@ result_all <- data_all %>%
 
 result_all2 <- result_all %>% filter(fdr<0.1|Y>1.1|Y<0.9)
 
- result_all2$Alternation[1] <- 'Chr9q Loss'
- result_all2$Alternation[2] <- 'Chr22q Loss'
- result_all2$Alternation[3] <- 'HLA LOH'
- result_all2$Alternation[4] <- 'Chr9p Loss'
- result_all2$Alternation[5] <- 'Chr18q Loss'
- result_all2$Alternation[6] <- 'TERT Amplificaiton'
- result_all2$Alternation[7] <- 'Chr7q Gain'
- result_all2$Alternation[8] <- 'Chr19 HD'
- result_all2$Alternation[9] <- 'SMAD4 Mutation'
- result_all2$Alternation[10] <- 'STK11 Loss'
- result_all2$Alternation[11] <- 'CDKN2A Mutation'
- result_all2$Alternation[12] <- 'MET Mutation'
- 
+result_all2$Alternation[1] <- 'Chr9q Loss'
+result_all2$Alternation[2] <- 'Chr22q Loss'
+result_all2$Alternation[3] <- 'HLA LOH'
+result_all2$Alternation[4] <- 'Chr9p Loss'
+result_all2$Alternation[5] <- 'Chr18q Loss'
+result_all2$Alternation[6] <- 'TERT Amplificaiton'
+result_all2$Alternation[7] <- 'Chr7q Gain'
+result_all2$Alternation[8] <- 'Chr19 HD'
+result_all2$Alternation[9] <- 'SMAD4 Mutation'
+result_all2$Alternation[10] <- 'STK11 Loss'
+result_all2$Alternation[11] <- 'CDKN2A Mutation'
+result_all2$Alternation[12] <- 'MET Mutation'
+
 
 
 
@@ -1284,9 +1317,9 @@ ggsave('Figures/TL_ratio_alteration.pdf',width = 7,height = 6,device = cairo_pdf
 ## top candidate vs porportion of C1/C2/C3
 
 bind_rows(
-data_arm %>% filter(Gene=="Chr9p"|Gene=="Chr9q") %>% mutate(Gene="Chr9p/q Loss"),
-data_arm %>% filter(Gene=="Chr22q") %>% mutate(Gene="Chr22q Loss"),
-data_hla %>% mutate(Gene="HLA LOH")
+  data_arm %>% filter(Gene=="Chr9p"|Gene=="Chr9q") %>% mutate(Gene="Chr9p/q Loss"),
+  data_arm %>% filter(Gene=="Chr22q") %>% mutate(Gene="Chr22q Loss"),
+  data_hla %>% mutate(Gene="HLA LOH")
 ) %>% 
   left_join(sherlock_cnvinfo) %>% 
   mutate(CNV_Clust=factor(CNV_Clust,levels = c('C2','C1','C3'),labels = c('C1','C2','C3'))) %>% 
@@ -1298,8 +1331,8 @@ data_hla %>% mutate(Gene="HLA LOH")
   theme(axis.text.x = element_text(angle = 45,hjust = 0.5,vjust = 0.5))
 
 ggsave('Figures/TL_ratio_alteration2.pdf',width = 5,height = 7,device = cairo_pdf)
-  
-  
+
+
 
 
 # mutual exclusivity ------------------------------------------------------
@@ -1427,7 +1460,7 @@ tmp2 <- tmp %>%
   filter(term=="MutationY") %>% 
   ungroup() %>% 
   arrange(p.value)
-  
+
 
 ttmp <- tmp %>% filter(value>0) %>% count(Gene,Mutation,name) %>% filter(n>5) %>% count(Gene,name) %>% filter(n>1)
 
