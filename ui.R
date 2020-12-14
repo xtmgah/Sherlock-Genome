@@ -36,9 +36,10 @@ ui <- fluidPage(
 # each of the following will be a tab on the left sidebar
     dashboardSidebar(sidebarMenu(
       menuItem("Study Overview", tabName = "study_overview"),
-      menuItem("Data QC", tabName = "data_qc"),
+      menuItem("Sample QC", tabName = "sample_qc"),
       menuItem("Mutations", tabName = "mutations"),
-      menuItem("SCNA", tabName = "sv"),
+      menuItem("SCNA", tabName = "scna"),
+      menuItem("SV", tabName = "sv"),
       menuItem("Mutational Signature", tabName = "mutational_signature"),
       menuItem("Genomic Landscape", tabName = "genomic_landscape"),
       menuItem("Clonal Evolution", tabName = "clonal_evolution"),
@@ -48,14 +49,15 @@ ui <- fluidPage(
 # each of the following are what the tabs assigned page will read when the tab is clicked
     dashboardBody(
       tabItems(tabItem(tabName = "study_overview", h2("Study Overview")),
-               tabItem(tabName = "data_qc", h2("Data Quality Control (QC)")),
+               tabItem(tabName = "sample_qc", h2("Sample QC")),
                tabItem(tabName = "mutations", h2("Mutations")),
+               tabItem(tabName = "scna", h2("SCNA")),
                tabItem(tabName = "sv", h2("SV")),
                tabItem(tabName = "mutational_signature", h2("Mutational Signatures")),
                tabItem(tabName = "genomic_landscape", h2("Genomic Landscape")),
                tabItem(tabName = "clonal_evolution", h2("Clonal Evolution")),
                tabItem(tabName = "survival_analysis", h2("Survival Analysis")),
-               tabItem(tabName = "integrative_analysis", h2("Integrative Analysis")))
+               tabItem(tabName = "integrative_analysis", h2("Integrative Analysis"),tabsetPanel(tabPanel("Oncoplot"))))
     ),
   )
   
