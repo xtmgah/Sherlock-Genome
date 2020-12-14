@@ -1,6 +1,7 @@
 
 #Sherlock-Genome: A R Shiny App for Genomic Analysis and Visualization
 
+#updated 12/14/2020
 # specify the packages needed for the app through a character vector
 # keep adding to this vector when additional packages are required to run the app successfully
 packages_req <- c("shiny","shinydashboard")
