@@ -3,7 +3,7 @@
 
 # specify the packages needed for the app through a character vector
 # keep adding to this vector when additional packages are required to run the app successfully
-packages_req <- c("shiny","shinydashboard")
+packages_req <- c("shiny","shinydashboard", "markdown")
 
 # check for required packages and install those not installed
 # lapply() function to use the packages_req vector and carry out the function written
@@ -34,10 +34,12 @@ ui <- fluidPage(
     
 # each of the following will be a tab on the left sidebar
     dashboardSidebar(sidebarMenu(
+      menuItem("Data Load", tabName = "data_load"),
       menuItem("Study Overview", tabName = "study_overview"),
-      menuItem("Data QC", tabName = "data_qc"),
+      menuItem("Sample QC", tabName = "sample_qc"),
       menuItem("Mutations", tabName = "mutations"),
-      menuItem("SCNA", tabName = "sv"),
+      menuItem("SCNA", tabName = "scna"),
+      menuItem("SV", tabName = "sv"),
       menuItem("Mutational Signature", tabName = "mutational_signature"),
       menuItem("Genomic Landscape", tabName = "genomic_landscape"),
       menuItem("Clonal Evolution", tabName = "clonal_evolution"),
@@ -46,15 +48,19 @@ ui <- fluidPage(
     )),
 # each of the following are what the tabs assigned page will read when the tab is clicked
     dashboardBody(
-      tabItems(tabItem(tabName = "study_overview", h2("Study Overview")),
-               tabItem(tabName = "data_qc", h2("Data Quality Control (QC)")),
+      tabItems(tabItem(tabName ="data_load", h3("Data Load"),h4("Choose one of the two methods below to upload data into the corresponding modules in the left panel:"), h5("1. Select a project code and all files available for that specific project will be populated automatically into the left panel corresponding to the appropriate module."),
+                       h5("2. Select a project code, view all filenames and their descriptions, and then choose the file(s) you would like to load."),
+                       selectInput("project_code","Begin by selecting a project code:", c("BRCA_HK", "mWGS","Sherlock")),actionButton("select", "Select Project Code"), uiOutput("selection"),uiOutput("selection_b"),uiOutput("yes"),uiOutput("no")),
+               tabItem(tabName = "study_overview", h2("Study Overview"), uiOutput("selection_overview")),
+               tabItem(tabName = "sample_qc", h2("Sample QC")),
                tabItem(tabName = "mutations", h2("Mutations")),
+               tabItem(tabName = "scna", h2("SCNA")),
                tabItem(tabName = "sv", h2("SV")),
                tabItem(tabName = "mutational_signature", h2("Mutational Signatures")),
                tabItem(tabName = "genomic_landscape", h2("Genomic Landscape")),
                tabItem(tabName = "clonal_evolution", h2("Clonal Evolution")),
                tabItem(tabName = "survival_analysis", h2("Survival Analysis")),
-               tabItem(tabName = "integrative_analysis", h2("Integrative Analysis")))
+               tabItem(tabName = "integrative_analysis", h2("Integrative Analysis"),tabsetPanel(tabPanel("Oncoplot"))))
     ),
   )
   
