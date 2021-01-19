@@ -3,7 +3,7 @@
 
 # specify the packages needed for the app through a character vector
 # keep adding to this vector when additional packages are required to run the app successfully
-packages_req <- c("shiny","shinydashboard", "markdown")
+packages_req <- c("shiny","shinydashboard", "markdown","shinyjs")
 
 # check for required packages and install those not installed
 # lapply() function to use the packages_req vector and carry out the function written
@@ -49,10 +49,11 @@ ui <- fluidPage(
 # each of the following are what the tabs assigned page will read when the tab is clicked
     dashboardBody(
       tabItems(tabItem(tabName ="data_load", h3("Data Load"),h4("Choose one of the two methods below to upload data into the corresponding modules in the left panel:"), h5("1. Select a project code and all files available for that specific project will be populated automatically into the left panel corresponding to the appropriate module."),
-                       h5("2. Select a project code, view all filenames and their descriptions, and then choose the file(s) you would like to load."),
-                       selectInput("project_code","Begin by selecting a project code:", c("BRCA_HK", "mWGS","Sherlock")),actionButton("select", "Select Project Code"), uiOutput("selection"),uiOutput("selection_b"),uiOutput("yes"),uiOutput("no")),
-               tabItem(tabName = "study_overview", h2("Study Overview"), uiOutput("selection_overview")),
-               tabItem(tabName = "sample_qc", h2("Sample QC")),
+                       h5("2. Select a project code, view all of the files available for the project selected, and then choose the file(s) you would like to load."),
+                       selectInput("project_code","Begin by selecting a project code:", c("BRCA_HK", "mWGS","Sherlock")),conditionalPanel(condition= "input.project_code",actionButton("select", "Select Project Code"),uiOutput("selection"),uiOutput("file_prompt"),tableOutput("file"),hr(),uiOutput("selection_b")),conditionalPanel(condition= "input.select",actionButton("yes_all_files", "Yes"), actionButton("no_all_files", "No")),
+                       conditionalPanel(condition = "input.no_all_files",uiOutput("no")), conditionalPanel(condition= "input.yes_all_files", uiOutput("yes"))),
+               tabItem(tabName = "study_overview", h2("Study Overview"),uiOutput("study_overview"),uiOutput("yes_load")),
+               tabItem(tabName = "sample_qc", h2("Sample QC"),uiOutput("test")),
                tabItem(tabName = "mutations", h2("Mutations")),
                tabItem(tabName = "scna", h2("SCNA")),
                tabItem(tabName = "sv", h2("SV")),
