@@ -1,20 +1,55 @@
 
 
 server <- function(input, output, session){
-  #output$selection <- eventReactive(input$select, {print(paste0("You have selected the following project: ",input$project_code))})
-  #output$selection_b <- eventReactive(input$select, {print("Would you like to populate all of the modules with the corresponding files available for this project all at once?")})
   observeEvent(input$select,{
-    output$selection <- renderText({paste0("You have selected the following project: ", input$project_code)})
-    output$selection_b <- renderText({"Would you like to load all of the files available into their corresponding modules for this project?"})
-    output$yes <- renderUI({actionButton("yes_all_files", "Yes")})
-    output$no <- renderUI({actionButton("no_all_files", "No")})
+    output$selection <- renderUI({paste0("You have selected the following project: ", input$project_code)})
+    output$file_prompt <- renderUI({paste0("Below are the files available for the ", input$project_code, "project:")})
+    output$file <- renderTable(list.files(paste0("Genomic Data/", input$project_code)), colnames=FALSE, bordered=FALSE)
+    output$selection_b <- renderUI({"Would you like to load all of the files available into their corresponding modules for this project?"})
+    
+    })
+  
+  
+  # don't really need the load all files button; could just have all of the files load after clicking yes
+  observeEvent(input$yes_all_files,{
+    output$yes <- renderUI({paste0("All available files for the ", input$project_code, " project have been loaded into their corresponding module on the left.")})
+    #output$yes <- renderUI({actionButton("load_all_files", "Load All Files")})
   })
   
-  #output$selection_yesno <- eventReactive(input$select, renderUI({actionButton("yes_all_files", "Yes")}))
-  # will need to be changed depending on if the user decides to upload one-by-one or all at once for the project code selected
-  output$selection_overview <- eventReactive(input$select, {includeMarkdown(paste0("/Users/kleinam/sherlock_genome/Sherlock-Genome/Genomic Data/Study_Overview_",input$project_code,".Rmd"))})
+  observeEvent(input$yes_all_files,{
+    project_file_list <- list.files(paste0("Genomic Data/", input$project_code))
+    i <- 1
+    for(each in 1:length(project_file_list)){
+      #file_read_in <- readLines(con=file(paste0("Genomic Data/","Sherlock","/",project_file_list[[i]]))) %>% includeMarkdown()
+      file_read_in <- includeMarkdown(paste0("Genomic Data/", "Sherlock/",project_file_list[[i]]))
+      #print(file_read_in)
+      #i <- i + 1
+      output$yes_load <- renderUI({file_read_in})
+    }  
+  })
   
-  # what to do if user says to upload all files at once, or to see the filenames and descriptions
-  #observeEvent(input$yes_all_files, {print(paste0("Selected:",input$yes_all_files))})
-  #observeEvent(input$no_all_files, {print(input$no_all_files)})
+  observeEvent(input$no_all_files,{
+      project_code <- input$project_code
+      output$no <- renderUI(conditionalPanel(condition="input.no_all_files",checkboxGroupInput("file_list",label= NULL, choices=list.files(paste0("Genomic Data/", project_code)), selected= NULL),actionButton("load_selected_files", "Load selected files")))
+  })
+  
+  observeEvent(input$file_list, {if("Study_Overview.Rmd" %in% input$file_list){
+    path_overview <- file.path(paste0("Genomic Data/",input$project_code,"/Study_Overview.Rmd"))
+  } else{
+    # Warning in file(con, "r") :file("") only supports open = "w+" and open = "w+b": using the former (still works)
+    path_overview <- ""
+  }
+    output$study_overview <- eventReactive(input$load_selected_files, {includeMarkdown(path_overview)})
+  })
+  
+  observeEvent(input$file_list, {if("test.txt" %in% input$file_list){
+    path_test <- file.path(paste0("Genomic Data/",input$project_code,"/test.txt"))
+  } else{
+    # Warning in file(con, "r") :file("") only supports open = "w+" and open = "w+b": using the former (still works)
+    path_test <- ""
+  }
+   # might need to change includeMarkdown in the future when not an Rmd file
+    output$test <- eventReactive(input$load_selected_files, {includeMarkdown(path_test)})
+  })
+  
 }
