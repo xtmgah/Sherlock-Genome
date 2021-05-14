@@ -8,15 +8,6 @@ read_in_file <- function(filename, sep="\t",header=TRUE){
   file <- read.delim(file=filename,sep="\t", header=TRUE)
 }
 
-# call inspectdf function (na, cat, etc)
-inspect_data <- function(filename,sep="\t",header=TRUE){
- dataframe <- read.delim(file=filename,sep=sep,header=header)
- na_result <- inspect_na(dataframe)
- #cat_result <- inspect_cat(dataframe)
- #final_result <- cat(na_result, cat_result)
- return(na_result=na_result)
-}
-
 # should we reassign the column types? (numeric and character)
 # example: ngs_purity_table$DPClust_Mutations <- as.numeric(ngs_purity_table$DPClust_Mutations)
 # typeof(ngs_purity_table$DPClust_Mutations) == typeof(ngs_purity_table$Tumor_Barcode) FALSE (int and chr)
@@ -58,10 +49,18 @@ inspect_data <- function(filename,sep="\t",header=TRUE){
 
 # inspect data functions
 inspect_data_function <- function(dataframe, type_of_inspection=NULL,column_name=NULL ){
-  #dataframe <- read_in_file(filename="all_ngspurity_output.txt")
-  #ngs_purity_table <- read_in_file(filename="all_ngspurity_output.txt")
-  # possible arguments for type_of_inspection: na, cat, cat_levels, num, types; default is NULL
-  # if statements depending on the option chosen by the user (eventually for any dataframe- test is ngspurity)
+  #if(column_name != "All columns"){
+  #  dataframe <- as.data.frame(dataframe[,column_name])
+  #}
+  # only make available inspect functions applicable to the data type for the column_name selected
+  #if(typeof(column_name) == "integer" || typeof(column_name) == "numeric"){
+    # type_of_inspection %in% c("na", "num","types") == TRUE
+  #}
+
+  #if(typeof(column_name) == "character"){
+    #type_of_inspection %in% c("na", "cat", "cat_levels", "types") ==TRUE
+  #}
+  
   # inspect_na()
   if(type_of_inspection =="na"){
     x <- inspect_na(dataframe)
@@ -79,6 +78,7 @@ inspect_data_function <- function(dataframe, type_of_inspection=NULL,column_name
   }
   # inspect_num()
   if(type_of_inspection == "num"){
+    #dataframe <- as.data.frame(as.numeric(unlist(dataframe)))
     x <- inspect_num(dataframe)
     x <- show_plot(x)
   }
@@ -90,15 +90,47 @@ inspect_data_function <- function(dataframe, type_of_inspection=NULL,column_name
   return(x)
 }
 
+figure_display_ngspurity <- function(tumor_barcode=NULL,battenberg=NULL,type=NULL){
+  ngspurity_qc <- read_in_file("ngspurity_qc_file.txt")
+  # pull the filename from the ngspurity_qc_file table
+  file_path <- ngspurity_qc$File[which(ngspurity_qc$Tumor_Barcode==tumor_barcode & ngspurity_qc$Battenberg==battenberg & ngspurity_qc$Type==type)]
+  # absolute path
+  filename <- normalizePath(file.path(file_path))
+  # relative path
+  filename <- file.path(file_path)
+  #if(str_detect(file_path, ".pdf")){
+  #  tags$iframe(style="height:650px; width:100%; scrolling=yes",src=filename)
+  #}
+  #filename
+  
+  list(src = filename, alt = paste0(tumor_barcode, "_", battenberg, "_", type))
+}
+
 server <- function(input, output, session){
   
+  # will need to be use for all dataframes and not only all_ngspurity_output
    inspect_option <- reactive({
-        dataframe = read_in_file(filename="all_ngspurity_output.txt")
+        req(input$inspect_data_type)
+        req(input$column_name_to_inspect)
+        # in future will need to fix as to how to allow for different filename (and therefore)
+        dataframe = read_in_file(filename="all_ngspurity_output.txt") # somehow change to input$dataframe somewhere?
         type_of_inspection = input$inspect_data_type
         column_name = input$column_name_to_inspect
-        return(inspect_data_function(dataframe, type_of_inspection))
+        return(inspect_data_function(dataframe, type_of_inspection, column_name))
   })
-  
+   
+  # reactive to call figure_display() function above
+   figure_output <- reactive({
+     #ngspurity_qc <- read_in_file("ngspurity_qc_file.txt")
+     req(input$tumor_barcode_to_inspect)
+     req(input$battenberg_to_inspect)
+     req(input$type_to_inspect)
+     tumor_barcode = input$tumor_barcode_to_inspect
+     battenberg = input$battenberg_to_inspect
+     type =  input$type_to_inspect
+     return(figure_display_ngspurity(tumor_barcode, battenberg,type))
+   })
+   
   observeEvent(input$select,{
     setwd(paste0("./Genomic Data/",input$project_code))
     #output$file_prompt <- renderUI({paste0("Below are the files available for the ", input$project_code, " project:")})
@@ -138,22 +170,8 @@ server <- function(input, output, session){
     }
     
   )
-  
-  # load files depending on if user selects "Select All Files" or "Select Individual Files"
- # observeEvent(input$submit, {
- #    if(input$choose_files_all){
-#      files <- list.files()
-#      i <- 1
-#     for(each in 1:length(files))
-  #paste0("./Genomic Data/",input$project_code)
- #   }else{
-      
-  #  }
-#  })
-  
-
+    
   # load files that were selected (right now works for both individual and all files)
-  # dropdown for column headers? and dropdown for the different inspect options?
   observeEvent(input$submit, {
     # right now in Sherlock: all_ngspurity_output.txt, Study_Overview.Rmd, test.txt (alphabetical order)
     if(input$choose_files_ind || input$choose_files_all){
@@ -164,19 +182,21 @@ server <- function(input, output, session){
         output$study_overview <- renderUI({study_overview})}
       if("all_ngspurity_output.txt" %in% input$file_list){
         ngs_purity_table <- read_in_file("all_ngspurity_output.txt")
-        #ngs_purity_table <- read.delim(file="all_ngspurity_output.txt",sep="\t", header=TRUE)
-        #output$ngs_purity_inspect <- renderTable({inspect_na(ngs_purity_table)})
-        # add in selection for range of rows to display
-        #output$na <- renderTable({head(inspect_data)})
         ngs_purity_header <- read_colnames("all_ngspurity_output.txt")
         # possibly move to the ui side (depends on if it should be available from the start)
-        output$ngs_purity_header <- renderUI({selectInput("ngspurity_header","Select at least one column name:", choices= ngs_purity_header, multiple= TRUE)})
-        #output$ngs_rows_to_display <- renderUI({textInput("ngs_rows_to_display","Select the number or rows you would like to view (must be between 1 and 100):", value=10)})
-        #output$ngs_rows_to_display_validate <- validate_row_input(input$ngs_rows_to_display)
+        # View Sample Data Tab
+        output$ngs_purity_header <- renderUI({dropdownButton(inputId="ngspurity_dropdown",label="Select Columns",circle=FALSE,checkboxGroupInput("ngspurity_header",label="Column Names",choices=c("All columns",ngs_purity_header),selected=c("Tumor_Barcode","PGA","PGA_Subclonal","PGA_TETRA","PGA_LOH","PGA_Haploid_LOH")))})
         output$ngs_purity_header_b <- DT::renderDataTable({datatable(ngs_purity_table[ ,input$ngspurity_header,drop=FALSE], options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
-        output$inspect_df_test <- renderUI({selectInput("inspect_data_type","Select one of the options below to inspect the data:" ,choices=c("cat","cat_levels","na","num","types"), multiple=FALSE, selected="na")})
-        #output$inspect_df_test <- renderPrint({inspect_data(filename="all_ngspurity_output.txt")})
+        # Inspect Data Tab
+        output$inspect_df_test <- renderUI({selectInput("inspect_data_type","Select one of the options below to inspect the data:" ,choices=c("cat","cat_levels","na","num","types"), multiple=FALSE, selected="cat")})
+        output$ngs_purity_header_inspect_tab <- renderUI({selectInput("column_name_to_inspect","Select one column name to inspect, or all columns:", choices= c("All columns",ngs_purity_header), multiple= FALSE, selected="All columns")})
         output$testprint <- renderPlot(inspect_option())
+        # View Figures Tab
+        ngspurity_qc <- read_in_file("ngspurity_qc_file.txt")
+        output$ngspurity_qc_barcode <- renderUI({selectInput("tumor_barcode_to_inspect","Select one Tumour Barcode to inspect:", choices= unique(ngspurity_qc$Tumor_Barcode), multiple= FALSE)})
+        output$ngspurity_qc_battenberg <- renderUI({selectInput("battenberg_to_inspect","Select one Battenberg to inspect:", choices= unique(ngspurity_qc$Battenberg), multiple= FALSE)})
+        output$ngspurity_qc_type <- renderUI({selectInput("type_to_inspect","Select one Type to inspect:", choices= unique(ngspurity_qc$Type), multiple= FALSE)})
+        output$figure <- renderImage({figure_output()},deleteFile=FALSE)
       }
       if("test.txt" %in% input$file_list){
         test <- readLines("test.txt")
@@ -184,47 +204,23 @@ server <- function(input, output, session){
       }
   })
   
-  #observeEvent(input$inspect_data_type,{
-  #  updateSelectInput(session,"inspect_data_type", "Select one of the options below to inspect the data:",choices=c("cat","cat_levels","na","num","types"))
+  # edit the option for displaying all columns, not finished yet
+  #Warning in if (input$ngspurity_header == "All columns") { :
+     # the condition has length > 1 and only the first element will be used
+  observeEvent(input$ngspurity_header,{
+    if(input$ngspurity_header == "All columns"){
+      ngs_purity_header <- read_colnames("all_ngspurity_output.txt")
+      updateCheckboxGroupInput(session,"ngspurity_header", label="Column names", choices= c("All columns",ngs_purity_header), selected= ngs_purity_header)
+    }
+  })
+  
+  # update inspect df dropdown to update depending on which column type is chosen
+  #observeEvent(input$column_name_to_inspect,{
+  #  if(typeof(input$column_name_to_inspect) =="character"){
+  #    updateSelectInput(session,"inspect_data_type", "Select one of the options below to inspect the data:",choices=c("cat","cat_levels","na","types"))
+  #  }
   #})
-
   
-#output$ngs_purity_header_b <- renderTable()
- 
- #ngs_purity_table <- read.delim(file="all_ngspurity_output.txt",sep="\t", header=TRUE)
- #observeEvent(input$ngs_rows_to_display,{
-   #r <- seq(1:100)
-    #ngs_purity_table <- read.delim(file="all_ngspurity_output.txt",sep="\t", header=TRUE)
-    #if(input$ngs_rows_to_display %in% r){
-    #  output$ngs_purity_header_b <- renderTable({ngs_purity_table[1:input$ngs_rows_to_display,inspect_data_colname(),drop=FALSE]})
-    #}else{
-    # output$range_error <- renderPrint({"The number of rows entered must be between 1 and 100."})
-    #}
-  #})
-
-  #observe({
-  #  x <- input$ngspurity_header
-  #  if(is.null(x)){
-  #    shinyjs::disable("create_table")
-   # }else{
-   #   shinyjs::enable("create_table")
-   # }
-  
-
-
-  #observeEvent(input$ngs_rows_to_display,{
-    # select rows to display (default 10, maximum 100?)
-   # ngs_purity_table <- read.delim(file="all_ngspurity_output.txt",sep="\t", header=TRUE)
-  #  if(input$ngs_rows_to_display >100 || input$ngs_rows_to_display <=0){
-   #   output$range_error <- renderPrint({"The number of rows entered must be between 1 and 100."})
-  #  }else{
-  #      output$ngs_purity_header_b <- renderTable({ngs_purity_table[1:input$ngs_rows_to_display ,input$ngspurity_header,drop=FALSE]})
-  #      }
-  #  })
- 
-  
-
-
 }
 
 # output$oncoplot <- renderPlot({})
