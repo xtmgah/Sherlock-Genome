@@ -7,7 +7,7 @@
 
 # specify the packages needed for the app through a character vector
 # keep adding to this vector when additional packages are required to run the app successfully
-packages_req <- c("shiny","shinydashboard", "markdown","shinyjs", "tibble","inspectdf","DT","dplyr","shinyWidgets","stringr")
+packages_req <- c("shiny","shinydashboard", "markdown","shinyjs", "tibble","inspectdf","DT","dplyr","shinyWidgets","stringr","PMCMRplus","ggstatsplot","ggplot2", "ggpubr","cowplot","data.table") #ggpubr- ggqqplot()
 
 # check for required packages and install those not installed
 # lapply() function to use the packages_req vector and carry out the function written
@@ -60,8 +60,10 @@ ui <- fluidPage(
                tabItem(tabName = "study_overview", h2("Study Overview"),uiOutput("study_overview")),
                tabItem(tabName = "sample_qc", h2("Sample QC"),uiOutput("test")),
                tabItem(tabName = "NGSpurity", h2("NGSpurity"), tabsetPanel(tabPanel("View Sample Data",h4("Select the columns you would like to view from the dropdown below:"),uiOutput("ngs_purity_header"),DT::dataTableOutput("ngs_purity_header_b")),tabPanel("Inspect Data", h4("Select filters to inspect the data based on the following options. The meaning of each is as follows:"), tags$li("cat: summary and comparison of categorical columns"), tags$li("cat_levels: summary and comparison of the most common levels in categorical columns"),
-                                  tags$li("na: summary and comparison of the rate of missingness across dataframe columns"), tags$li("num: summary and comparison of numeric columns"), tags$li("types: summary and comparison of column types"),uiOutput("ngs_purity_header_inspect_tab"),uiOutput("inspect_df_test"),plotOutput("testprint")),
-                                  tabPanel("View Figures", h4("Using the dropdown menus below, select the figures you would like to view. The figures will be updated as choices from the dropdown menus are changed."),uiOutput("ngspurity_qc_barcode"),uiOutput("ngspurity_qc_battenberg"),uiOutput("ngspurity_qc_type"),tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),imageOutput("figure")))),
+                                  tags$li("na: summary and comparison of the rate of missingness across dataframe columns"), tags$li("num: summary and comparison of numeric columns"), tags$li("types: summary and comparison of column types"),uiOutput("ngs_purity_header_inspect_tab"),uiOutput("inspect_df_test"),tags$style(type="text/css",
+                                                                                                                                                                                                                                                                                                                                  ".shiny-output-error { visibility: hidden; }",
+                                                                                                                                                                                                                                                                                                                                  ".shiny-output-error:before { visibility: hidden; }"),plotOutput("testprint", height="800px")),
+                                  tabPanel("View Figures", h4("Using the dropdown menus below, select the figures you would like to view. The figures will be updated as choices from the dropdown menus are changed."),uiOutput("ngspurity_barcode"),uiOutput("ngspurity_battenberg"),uiOutput("ngspurity_type"),tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),imageOutput("figure")),tabPanel("Association Testing", h4("Select two variables to be used in an association test."), uiOutput("ngspurity_variable_list_1"),uiOutput("ngspurity_variable_list_2"),actionButton(inputId="submit1",label="Submit"),verbatimTextOutput("shapiro_test"),plotOutput("scatter_corr")))),
                tabItem(tabName = "mutations", h2("Mutations")),
                tabItem(tabName = "scna", h2("SCNA")),
                tabItem(tabName = "sv", h2("SV")),
@@ -74,3 +76,4 @@ ui <- fluidPage(
   )
   
 )
+
