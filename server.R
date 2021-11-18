@@ -1,4 +1,6 @@
 
+source('Sherlock_Genome_Functions.R')
+
 # detect os to apply correct file paths
 os_detect <- function(){
   os_name <- Sys.info()[['sysname']]
@@ -14,6 +16,68 @@ read_colnames <- function(filename, sep="\t",header=TRUE){
 read_in_file <- function(filename, sep="\t",header=TRUE){
   file <- read.delim(file=filename,sep="\t", header=TRUE)
   return(file)
+}
+
+sherlock_genome_filter <- function(data, conditions, column_selection){ #sherlock_genome_filter(data=data, conditions) conditions <- "MCN_WGD == 'nWGD'"
+  library(stringr)
+  
+  #conditions <- "MCN_WGD == 'nWGD'"
+  #conditions <- c("MCN_WGD == 'nWGD'" , "PGA >= 0.52")
+  # conditions <- c("MCN_WGD == 'nWGD'" "PGA >= 0.52",head(100)) # might want to somehow add this?
+  
+  print(conditions)
+  if(str_detect(conditions, ",")){
+    condition_split <- str_split(conditions, ",")
+    print(condition_split)
+    i <- 1
+    filter_list <- c()
+    #filter_condition <- data %>% filter( PGA >= 0.52) %>% filter(MCN_WGD == 'nWGD')
+    for(each in condition_split[[1]]){
+      print(condition_split[[1]][i])
+      #test[i] <- paste0("filter(", condition_split[[1]][i], ")")
+      filter_list <- append(filter_list,paste0("filter(", condition_split[[1]][i], ")"))
+      #print(test[i])
+      #filter_list <- append(filter_list, test[i])
+      i <- i + 1
+      print(i)
+    }
+      print(filter_list)
+      filter_list <- paste0(filter_list, collapse= " %>% ") # puts %>% between each filter
+      filter_df <- paste0("filter_condition <- data %>% ",filter_list)
+      
+  }else{
+    filter_df <- paste0("filter_condition <- data %>% filter(",conditions, ")") # %>% select(",column_selection, ")")
+    print(filter_df)
+  }
+  
+  print(column_selection)
+  # if(str_detect(column_selection, ",")){
+  #   column_select_split <- str_split(column_selection, ",'")
+  #   print(column_select_split)
+  if(length(column_selection > 1)){
+    i <- 1
+    column_list <- c()
+    for(each in column_selection){
+      print(column_selection[i])
+      column_list <- append(column_list,column_selection[i])
+      i <- i + 1
+    }
+    
+    column_list <- paste0(column_list, collapse= ",")
+    column_list <- (paste0("select(",column_list,")"))
+    print(column_list)
+  }else{
+    column_list <- (paste0("select(",column_selection,")"))
+  }
+
+    
+  
+  filter_df <- paste0("filter_condition <- data %>% filter( ",conditions, ") %>%", column_list)
+  #print(filter_df)
+  eval(parse(text=filter_df))
+  
+  return(filter_condition)
+  
 }
 
 change_data_type <- function(data){
@@ -65,7 +129,7 @@ validate_vardf <- function(data, forces=NULL, nachars=c("","na","Na","NA","nan",
     data <- data %>% mutate(across(where(~ is.character(.) & (n_distinct(.) < 0.8*n())),~ fct_lump(fct_infreq(as.factor(.x)),prop = 0.2)))
   }
   # if change the order
-  #data <- data %>% select(names_oringal)
+  #data <- data %>% select(names_original)
   
   if(!is.null(excludes)){
     names_keep <- c(colnames(data),colnames(data_excludes))
@@ -165,17 +229,55 @@ sherlock_genome_regression <- function(data,formula=NULL) {
   
   data <- validate_vardf(data)
   
+  data_types <- data %>% inspectdf::inspect_types()
+  factor_vars <- as.vector(data_types$col_name[["factor"]])
+  character_vars <- as.vector(data_types$col_name[["character"]])
+  numeric_vars <- as.vector(data_types$col_name[["numeric"]])
+  
   ## for regression module
   supported_types <- c("lm", "glm")
+  
+  # use different family depending on if the response variable (categorical family= binomial, continuous family=gaussian)
+  # or tell user the response needs to be categorical since it is glm (logistic regression)
   
   # if(!str_detect(formula,"~")){
   #   stop("Please check your formula for regression, for example, lm( mpg ~ vs + gear")
   # }
-  
-  str_spl_formula <- str_split(formula, "\\(") 
-  formula <- paste0(str_spl_formula[[1]][1],"(formula=",str_spl_formula[[1]][2])
+  # 
+  if(startsWith(formula, "lm")){
+  # if(str_detect(formula, fixed("lm"))){
+    print(paste0("str_detect(formula, fixed(lm)",str_detect(formula, fixed("lm"))))
+    str_spl_formula <- str_split(formula, "\\(")
+    print(str_spl_formula)
+    formula <- paste0(str_spl_formula[[1]][1],"(formula=",str_spl_formula[[1]][2])
+    print(formula)
+  }
+
+  if(startsWith(formula, "glm")){
+  # if(str_detect(formula, fixed("glm"))){
+    print(paste0("str_detect(formula, fixed(glm)",str_detect(formula, fixed("glm"))))
+    str_spl_formula <- str_split(formula, "\\(")
+    print(str_spl_formula)
+    print(str_spl_formula[[1]][2])
+    # get the first variable that is in the formula model (i.e. before the ~)
+    response_var <- str_split(str_spl_formula[[1]][2],"~")
+    print(response_var)
+    # trim whitespace
+    response_var2 <- trimws(response_var[[1]][1])
+    print(response_var2)
+    if(response_var2 %in% factor_vars | response_var2 %in% character_vars){
+      formula <- paste0(str_spl_formula[[1]][1],"(family=binomial,formula=", str_spl_formula[[1]][2]) # glm(MCN_WGD ~ PGA) 
+      print(formula)
+    }
+    if(response_var2 %in% numeric_vars){
+      formula <- paste0(str_spl_formula[[1]][1],"(family=gaussian,formula=", str_spl_formula[[1]][2]) # glm(PGA ~ MCN_WGD)
+      print(formula)
+    }
+
+  }
   
   input_formula <- paste0("mod <- data %>% ",formula)
+  print(input_formula)
   eval(parse(text=input_formula))
   
   p <- ggstatsplot::ggcoefstats(
@@ -203,8 +305,18 @@ sherlock_genome_regression_group <- function(data, formula= NULL, Group_Var, typ
     
   colnames(data)[colnames(data) == Group_Var] <- 'Group'
   
-  str_spl_formula <- str_split(formula, "\\(") 
-  formula <- paste0("(", str_spl_formula[[1]][2])
+   if(str_detect(formula, "lm")==TRUE){
+      str_spl_formula <- str_split(formula, "\\(") 
+      formula <- paste0("(", str_spl_formula[[1]][2])
+
+  }
+   
+   if(str_detect(formula, "glm")==TRUE){
+     str_spl_formula <- str_split(formula, "\\(") 
+     formula <- paste0("(", str_spl_formula[[1]][2]) # need to add in family somehow
+     print(formula)
+
+  }
   
   if(type =="lm"){
     result <- data %>% group_by(Group) %>% do(tidy(lm(formula,data=.))) %>% ungroup() %>% filter(term!="(Intercept)") %>% filter(!is.na(p.value))
@@ -530,6 +642,14 @@ sherlock_genome_association <- function(data, Var1, Var2, filter_zero1=FALSE, fi
 
 server <- function(input, output, session){
   
+  fisher_test <- reactive({
+    vartmp = c('Tumor_Barcode',input$vartmp_options_select)
+    sp_group = input$sp_group_selected
+    var2name = input$vartmp_options_select_var2
+    
+    return(fishergroup(vartmp, sp_group, var2name))
+  })
+  
 # could not get this to work at this time, so split into two different reactives (at least for now)  
   # inspect_option <- reactive({
   #   #req(input$inspect_data_type)
@@ -554,6 +674,15 @@ server <- function(input, output, session){
   #   #column_name = column_name
   #   return(inspect_data_function(dataframe, type_of_inspection, column_name))
   # })
+  
+  df_filter_reactive <- reactive({
+    req(input$user_filter_input)
+    data = read_in_file("all_ngspurity_output.txt")
+    conditions = input$user_filter_input
+    column_selection = input$ngspurity_header
+    
+    return(sherlock_genome_filter(data,conditions, column_selection))
+  })
   
   inspect_option_qc_sample <- reactive({
 
@@ -842,6 +971,16 @@ server <- function(input, output, session){
       data_qc_sample <- read_in_file("QC_sample_level.txt")
       #ngs_purity_table <- read_in_file("all_ngspurity_output.txt")
       qc_sample_header <- read_colnames("QC_sample_level.txt") 
+      
+      qc_sample_assoc <- data_qc_sample %>% validate_vardf() %>% inspectdf::inspect_types()
+      
+      factor_var_sample <- data.frame(qc_sample_assoc$col_name[["factor"]],rep_len("factor",length.out= length(qc_sample_assoc$col_name[["factor"]]))) 
+      colnames(factor_var_sample) <- c("Variable Name", "Variable Type")
+      numeric_var_sample <- data.frame(qc_sample_assoc$col_name[["numeric"]],rep_len("numeric",length.out= length(qc_sample_assoc$col_name[["numeric"]])))   
+      colnames(numeric_var_sample) <- c("Variable Name", "Variable Type")
+      character_var_sample <- data.frame(qc_sample_assoc$col_name[["character"]],rep_len("character",length.out= length(qc_sample_assoc$col_name[["character"]])))
+      colnames(character_var_sample) <- c("Variable Name", "Variable Type")
+      sample_level_variable_type_table <- rbind(factor_var_sample,character_var_sample,numeric_var_sample)
       # possibly move to the ui side (depends on if it should be available from the start)
       # View Sample Data Tab
       output$qc_sample_header <- renderUI({dropdownButton(inputId="qc_sample_dropdown",label="Select Columns",circle=FALSE,checkboxGroupInput("qcsample_header",label="Column Names",choices=c("All columns",qc_sample_header),selected=c("Study","Subject","Tumor_Barcode","Normal_Barcode","Gender","Tumor_File")))})
@@ -857,6 +996,16 @@ server <- function(input, output, session){
       data_qc_subject <- read_in_file("QC_subject_level.txt")
       #ngs_purity_table <- read_in_file("all_ngspurity_output.txt")
       qc_subject_header <- read_colnames("QC_subject_level.txt") 
+      
+      qc_subject_assoc <- data_qc_subject %>% validate_vardf() %>% inspectdf::inspect_types()
+      
+      factor_var_subject <- data.frame(qc_subject_assoc$col_name[["factor"]],rep_len("factor",length.out= length(qc_subject_assoc$col_name[["factor"]]))) 
+      colnames(factor_var_subject) <- c("Variable Name", "Variable Type")
+      numeric_var_subject <- data.frame(qc_subject_assoc$col_name[["numeric"]],rep_len("numeric",length.out= length(qc_subject_assoc$col_name[["numeric"]])))   
+      colnames(numeric_var_subject) <- c("Variable Name", "Variable Type")
+      character_var_subject <- data.frame(qc_subject_assoc$col_name[["character"]],rep_len("character",length.out= length(qc_subject_assoc$col_name[["character"]])))
+      colnames(character_var_subject) <- c("Variable Name", "Variable Type")
+      subject_level_variable_type_table <- rbind(factor_var_subject,character_var_subject,numeric_var_subject)
       # possibly move to the ui side (depends on if it should be available from the start)
       # View Sample Data Tab
       output$qc_subject_header <- renderUI({dropdownButton(inputId="qc_subject_dropdown",label="Select Columns",circle=FALSE,checkboxGroupInput("qcsubject_header",label="Column Names",choices=c("All columns",qc_subject_header),selected=c("Study","Subject","Barcode","Gender","Sample_ID","File","Wave")))})
@@ -875,7 +1024,12 @@ server <- function(input, output, session){
       # possibly move to the ui side (depends on if it should be available from the start)
       # View Sample Data Tab
       output$ngs_purity_header <- renderUI({dropdownButton(inputId="ngspurity_dropdown",label="Select Columns",circle=FALSE,checkboxGroupInput("ngspurity_header",label="Column Names",choices=c("All columns",ngs_purity_header),selected=c("Tumor_Barcode","PGA","PGA_Subclonal","PGA_TETRA","PGA_LOH","PGA_Haploid_LOH")))})
-      output$ngs_purity_table <- DT::renderDataTable({datatable(data_ngs[ ,input$ngspurity_header,drop=FALSE], options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
+      output$filter_input <- renderUI({textInput(inputId="user_filter_input",label="Filter Dataframe",placeholder = "MCN_WGD == 'nWGD'",value="")})
+      output$ngs_purity_table1 <- DT::renderDataTable({datatable(data_ngs[ ,input$ngspurity_header,drop=FALSE], options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
+      output$ngs_purity_table2 <- DT::renderDataTable({
+        req(input$filter_df)
+        datatable(isolate(df_filter_reactive()),options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
+        #datatable(data_ngs[ ,input$ngspurity_header,drop=FALSE], options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
       # Inspect Data Tab
       #output$inspect_df_test <- renderUI({selectInput("inspect_data_type","Select one of the options below to inspect the data:" ,choices=c("cat","cat_levels","na","num","types"), multiple=FALSE, selected="cat")})
       output$inspect_df_test <- renderUI({pickerInput("inspect_data_type_ngs","Select one of the options below to inspect the data:" ,choices=c("cat","cat_levels","na","num","types"), multiple=FALSE, selected="cat")})
@@ -900,40 +1054,31 @@ server <- function(input, output, session){
       output$ngspurity_barcode <- renderUI({selectInput("tumor_barcode_to_inspect","Select one Tumor Barcode to inspect:", choices= unique(ngspurity_qc$Tumor_Barcode), multiple= FALSE)})
       output$ngspurity_battenberg <- renderUI({selectInput("battenberg_to_inspect","Select one Battenberg to inspect:", choices= unique(ngspurity_qc$Battenberg[ngspurity_qc$Tumor_Barcode==input$tumor_barcode_to_inspect]), multiple= FALSE)})
       output$ngspurity_type <- renderUI({selectInput("type_to_inspect","Select one Type to inspect:", choices= unique(ngspurity_qc$Type[ngspurity_qc$Tumor_Barcode==input$tumor_barcode_to_inspect & ngspurity_qc$Battenberg == input$battenberg_to_inspect]), multiple= FALSE)})
-      
-      # observe({
-      #   req(input$ngspurity_tabs)
-      #   if(input$ngspurity_tabs== "ngs_view_figures"){
-      #     setwd("./NGSpurity")
-      #   }
-      # })
-      #output$ngspurity_qc_battenberg <- renderUI({selectInput("battenberg_to_inspect","Select one Battenberg to inspect:", choices= unique(ngspurity_qc$Battenberg), multiple= FALSE)})
-      #output$ngspurity_qc_type <- renderUI({selectInput("type_to_inspect","Select one Type to inspect:", choices= unique(ngspurity_qc$Type), multiple= FALSE)})
-      # output$figure <- renderImage({figure_output()},deleteFile=FALSE)
+  
       if(os_detect() %in% c("Linux","Darwin")){
         output$figure_pdf <-  renderImage({figure_output()},deleteFile=FALSE)
       }else{
         output$figure_pdf <- renderUI({ tags$iframe(style="height:1000px; width:60%", src= figure_output())})
       }
       
-      # Regression/Bivariable Association Tab
+      # Regression/Bivariable Association NGSPurity Data (Integrative Analysis Tab)
       # not sure this ngspurity_assoc variable is needed; need to remove those that end with "_Detail" from choices
       ngspurity_assoc <- read_in_file("all_ngspurity_output.txt") 
       ngspurity_assoc2 <- colnames(ngspurity_assoc %>% select(!ends_with("_Detail"),-"Tumor_Barcode"))
       ngspurity_assoc3 <- ngspurity_assoc %>% validate_vardf() %>% inspectdf::inspect_types()
-      factor_var <- data.frame(ngspurity_assoc3$col_name[["factor"]],rep_len("factor",length.out= length(ngspurity_assoc3$col_name[["factor"]]))) 
-      colnames(factor_var) <- c("Variable Name", "Variable Type")
-      numeric_var <- data.frame(ngspurity_assoc3$col_name[["numeric"]],rep_len("numeric",length.out= length(ngspurity_assoc3$col_name[["numeric"]])))   
-      colnames(numeric_var) <- c("Variable Name", "Variable Type")
-      character_var <- data.frame(ngspurity_assoc3$col_name[["character"]],rep_len("character",length.out= length(ngspurity_assoc3$col_name[["character"]])))
-      colnames(character_var) <- c("Variable Name", "Variable Type")
-      variable_type_table <- rbind(factor_var,character_var,numeric_var)
-      output$ngs_variable_table <- DT::renderDataTable({variable_type_table}) #options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE)})
+      factor_var_ngs <- data.frame(ngspurity_assoc3$col_name[["factor"]],rep_len("factor",length.out= length(ngspurity_assoc3$col_name[["factor"]]))) 
+      colnames(factor_var_ngs) <- c("Variable Name", "Variable Type")
+      numeric_var_ngs <- data.frame(ngspurity_assoc3$col_name[["numeric"]],rep_len("numeric",length.out= length(ngspurity_assoc3$col_name[["numeric"]])))   
+      colnames(numeric_var_ngs) <- c("Variable Name", "Variable Type")
+      character_var_ngs <- data.frame(ngspurity_assoc3$col_name[["character"]],rep_len("character",length.out= length(ngspurity_assoc3$col_name[["character"]])))
+      colnames(character_var_ngs) <- c("Variable Name", "Variable Type")
+      ngspurity_variable_type_table <- rbind(factor_var_ngs,character_var_ngs,numeric_var_ngs)
+      
+      #output$ngs_variable_table <- DT::renderDataTable({variable_type_table}) #options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE)})
       output$ngspurity_variable_list_1 <- renderUI({pickerInput("variable_choices_1", "Variable One", choices= ngspurity_assoc2, multiple=FALSE)})
       output$ngspurity_variable_list_1_group <- renderUI({pickerInput("variable_choices_1_group", "Variable One", choices= ngspurity_assoc2, multiple=FALSE)})
       output$ngspurity_variable_list_2 <- renderUI({pickerInput("variable_choices_2", "Variable Two",choices= ngspurity_assoc2, multiple=FALSE)})
       output$ngspurity_variable_list_2_group <- renderUI({pickerInput("variable_choices_2_group", "Variable Two",choices= ngspurity_assoc2, multiple=FALSE)})
-      #output$ylab <- renderUI({input$variable_choices_2})
       
       output$group_var_text_box_bivariable <- renderUI({textInput(inputId= "group_var_input_bivariable", label= NULL,placeholder= "Group Variable Name")})
       output$bivariable_grp_result <- DT::renderDataTable({
@@ -944,6 +1089,15 @@ server <- function(input, output, session){
         req(input$calculate_ngs_association)
         isolate(bivariable_inputs())})
       
+      output$association_data_test <- renderText({input$association_data})
+     
+      # if("NGSpurity" %in% input$association_data){
+        # output$ngs_variable_table <- DT::renderDataTable({variable_type_table}) #options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE)})
+
+      # }
+      #   print(input$association_data)
+      # 
+      # }
     # Regression Group
 
       output$group_var_text_box <- renderUI({textInput(inputId= "group_var_input", label= NULL,placeholder= "Group Variable Name" )})
@@ -966,7 +1120,7 @@ server <- function(input, output, session){
    
     if("genomePlot_list.txt" %in% input$file_list){
       data_genomePlot <- read_in_file("genomePlot_list.txt")    
-      output$genomePlot_Barcodes <- renderUI({pickerInput("tumor_barcode_to_inspect_genomePlot","Select one Tumor Barcode to inspect:", choices= unique(data_genomePlot$Tumor_Barcode), multiple= FALSE, options= pickerOptions(liveSearch=TRUE))})
+      output$genomePlot_Barcodes <- renderUI({pickerInput("tumor_barcode_to_inspect_genomePlot","Select one Tumor Barcode to inspect:", choices= unique(data_genomePlot$Tumor_Barcode), multiple= FALSE, options= pickerOptions(liveSearch=TRUE, dropupAuto = FALSE))})
       tumor_barcode_to_inspect_genomePlot_reactive <- reactive({
         req(input$tumor_barcode_to_inspect_genomePlot)
         tumor_barcode_to_inspect_genomePlot = input$tumor_barcode_to_inspect_genomePlot
@@ -977,8 +1131,78 @@ server <- function(input, output, session){
     }
       
   }
+  
+    observe({
+      if("ngspurity" %in% input$association_data){
+        output$ngs_variable_table <- DT::renderDataTable({ngspurity_variable_type_table}) #options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE)})
+        # updatePickerInput(session,"variable_choices_1a", "Variable One", choices=ngspurity_variable_type_table[,1])
+        data1 <- data_ngs
+      }
+      if("subject_level" %in% input$association_data){
+        output$subject_variable_table <- DT::renderDataTable({subject_level_variable_type_table}) #options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE)})
+        # updatePickerInput(session,"variable_choices_1a", "Variable One", choices=subject_level_variable_type_table[,1])
+        data2 <- data_qc_subject
+      }
+      
+      if("sample_level" %in% input$association_data){
+        output$sample_variable_table <- DT::renderDataTable({sample_level_variable_type_table}) #options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE)})
+        data3 <- data_qc_sample
+      }
+   
+    choices=list()
+    i <- 1
+    table_name <- c()
+    for(each in input$association_data){ #sample_level, subject_level, ngspurity
+      #association_data[i] <- sample_level_variable_type_table[,1]
+      table_name[i] <- paste0(input$association_data[i], "_variable_type_table")
+      var_name_column <- eval(parse(text=table_name[i]))[,1]
+      #choices <- var_name_column
+      choices <- append(choices, var_name_column, after=length(choices))
+      #choices <- list(input$association_data[i]=c(choices))
+      #print(test[i])
+      #choices[i] <- association_data[i][,1]
+      i <- i + 1
+      # output$ngspurity_variable_list_assoc_data <- renderUI({pickerInput("variable_choices_1a", "Variable One", choices= choices, multiple=FALSE)})
+      
+     } #choices=list(input$association_data[i]=c(paste0(association_data[i], "_variable_type_table")[,1]))
+    
+    
+    })
+    
+    # basics so far- need to make more general somehow 
+    observe({
+      if(length(input$association_data) >=2){
+        if("sample_level" %in% input$association_data){
+          x <- data_qc_sample
+        }
+        if("ngspurity" %in% input$association_data){
+          y <- data_ngs
+        }
+        data <- left_join(x,y)
+        data_colnames <- colnames(data)
+        output$ngspurity_variable_list_assoc_data <- renderUI({pickerInput("variable_choices_1a", "Variable One",choices=data_colnames,multiple=FALSE)})
+        
+      }else{
+        if("sample_level" %in% input$association_data){
+        output$ngspurity_variable_list_assoc_data <- renderUI({pickerInput("variable_choices_1a", "Variable One",choices=sample_level_variable_type_table[,1],multiple=FALSE)})
+        #updatePickerInput(session,"variable_choices_1a", "Variable One", choices=sample_level_variable_type_table[,1])
+        }
+        if("subject_level" %in% input$association_data){
+          output$ngspurity_variable_list_assoc_data <- renderUI({pickerInput("variable_choices_1a", "Variable One",choices=subject_level_variable_type_table[,1],multiple=FALSE)})
+        }
+        if("ngspurity" %in% input$association_data){
+          output$ngspurity_variable_list_assoc_data <- renderUI({pickerInput("variable_choices_1a", "Variable One",choices=ngspurity_variable_type_table[,1],multiple=FALSE)})
+          
+        }
+      }
+      })
+    
+    
+    
     
 })
+  
+  
   
   # edit the option for displaying all columns, not finished yet
   #Warning in if (input$ngspurity_header == "All columns") { :
@@ -1174,6 +1398,34 @@ server <- function(input, output, session){
     reset("group_var_input_bivariable")
   })
    
+  
+  # Integrative Analysis Tab
+  
+  # Enrichment Fisher Test
+  updateSelectizeInput(session, 'vartmp_options_select', choices = mdata0 %>% select(c(2:length(colnames(mdata0)))) %>% colnames(), server = TRUE)
+  # observe({
+  #   vartmp_options_select_var2
+  observe({
+    print(input$vartmp_options_select)
+    if(input$vartmp_options_select!=""){
+      updateSelectizeInput(session, 'vartmp_options_select_var2', choices = mdata0 %>% select(c(2:length(colnames(mdata0)))) %>% select(-input$vartmp_options_select) %>% colnames(), server = TRUE)
+    }
+  })
+  
+  output$sp_group_choices <- renderUI({selectInput("sp_group_selected", "Select one SP_Group to run the fisher test:", choices= sort(unique(sherlock_overall$SP_Group)), multiple= FALSE )})
+  
+  observeEvent(input$calculate,{
+    
+    result_table <- isolate(fisher_test())
+    output$fisher_output_table <- DT::renderDataTable({datatable(result_table[[1]], options=list(searchHighlight=TRUE, order=c(3,'asc')),filter=list(position="top",clear=TRUE,plain=FALSE))})
+    # result_table[[2]]
+    
+    output$fisher_output_plots1 <- renderPlot(result_table[[2]], height=500)
+    output$fisher_output_plots2 <- renderPlot(result_table[[3]], height=500)
+    if(length(result_table) == 4){
+      output$fisher_output_plots3 <- renderPlot(result_table[[4]], height=500)
+    }
+  })
   
 }
 
