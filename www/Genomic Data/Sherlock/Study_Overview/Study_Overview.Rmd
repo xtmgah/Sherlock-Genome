@@ -1,0 +1,16 @@
+---
+title: "Sherlock-lung: A Genomic Epidemiologic Study of Lung Cancer in Never Smokers"
+output: html_document
+---
+
+Sherlock-*lung* is a comprehensive study that aims to trace lung cancer etiology in never smokers by analyzing genomic data in tumor and surrounding lung tissue. Whole genome sequencing, whole transcriptome, and genome-wide methylation data will be analyzed to identify exogenous and endogenous processes involved in lung tumorigenesis. Analysis of the tumor microenvironment, clonal evolution, and circulating tumor DNA will be conducted in a subgroup of the cases. The molecular landscape will be integrated with histological and radiological features in order to develop a more refined classification of lung cancer in never smokers and provide insights into prognosis and treatment strategies.
+
+The study will include 2,500 never smoker lung cancer patients, a subset (n=~500) with “special exposures,” such as coal, radon, asbestos, air pollution, and microbial infection. The remaining ~2000 cases will come from the “general population,” with unknown exposures to lung cancer risk factors.
+
+For more information, please contact [Maria Teresa Landi, M.D., Ph.D.](https://dceg.cancer.gov/about/staff-directory/landi-maria)
+
+* [Tracing Lung Cancer Risk Factors Through Mutational Signatures in Never Smokers: the Sherlock-*Lung* Study.](https://academic.oup.com/aje/advance-article/doi/10.1093/aje/kwaa234/5941773) *American Journal of Epidemiology* 2020; Landi MT, Synnott NC, et al. 
+
+**Related Resources**
+
+[Integrative Tumor Epidemiology Branch Research Areas](https://dceg.cancer.gov/about/organization/tdrp/iteb/research)

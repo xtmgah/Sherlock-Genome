@@ -1,0 +1,16 @@
+---
+title: "Hong Kong Breast Cancer Genomics Study"
+output: html_document
+---
+
+The Hong Kong Breast Cancer Genomics Study aims to characterize the genomic and molecular profiles of breast tumors, tumor microenvironment (TME), and adjacent normal tissue collected from Chinese breast cancer patients in Hong Kong. The genomic and molecular features of these tumors and TME will be linked with clinical and etiologic factors to better understand the novel patterns of breast cancer incidence and outcomes among Asian women and improve our understanding of racial heterogeneity and health disparities.
+
+Previous genomic studies have largely focused on Western populations, and consequently large epidemiologic studies characterizing genomic alterations of breast cancer in Asian women are limited. The need for research across diverse populations is clear, particularly with increasing breast cancer incidence among Asian women. While this trend can be partly attributed to the growing adoption of Westernized lifestyles, new findings suggest that Asian breast cancer may have a distinct biology. DCEG researchers are analyzing whole exome and genome sequencing, RNA sequencing, and methylation profiling data derived from Hong Kong breast cancer patients to identify genomic alterations that are specific or enriched in this Asian population.
+
+For more information, contact [Rose Yang.](https://dceg.cancer.gov/about/staff-directory/yang-rose)
+
+[Integrative Tumor Epidemiology Branch – Research Areas](https://dceg.cancer.gov/about/organization/tdrp/iteb/research)
+
+**Related Resources**
+
+[Ghana Breast Health Study: A Multidisciplinary Case-control Study in West Africa](https://dceg.cancer.gov/research/cancer-types/breast-cancer/ghana-breast-study)
