@@ -1,0 +1,42 @@
+Module	Submodule	File	File_path	Required_columns
+Manifest Information	View Sample Data	QC_sample_level.txt	Manifest_Information/QC_sample_level.txt	Tumor_Barcode
+Manifest Information	View Subject Data	QC_subject_level.txt	Manifest_Information/QC_subject_level.txt	No required columns
+Manifest Information	Inspect Sample Data	QC_sample_level.txt	Manifest_Information/QC_sample_level.txt	Tumor_Barcode
+Manifest Information	Inspect Subject Data	QC_subject_level.txt	Manifest_Information/QC_subject_level.txt	
+NGSpurity	View Data QC	all_ngspurity_output.txt	NGSpurity/all_ngspurity_output.txt	Tumor_Barcode
+NGSpurity	Inspect Data	all_ngspurity_output.txt	NGSpurity/all_ngspurity_output.txt	Tumor_Barcode
+NGSpurity	View Figures	all_ngspurity_output.txt	NGSpurity/all_ngspurity_output.txt	Tumor_Barcode
+NGSpurity	View Figures	ngspurity_qc_file.txt	NGSpurity/ngspurity_qc_file.txt	Tumor_Barcode
+Mutations	Mutation Summary	mutations_manifest.txt	Mutations/mutations_manifest.txt	" Tumor_Barcode,SP_Group"
+Mutations	Mutation Summary	mut_summary_maf_data.txt	Mutations/mut_summary_maf_data.txt	"Tumor_Barcode, Variant_Classification, Variant_Type, Hugo_Symbol, Reference_Allele, Tumor_Seq_Allele2"
+Mutations	TMB	mutations_manifest.txt	Mutations/mutations_manifest.txt	"Tumor_Barcode,SP_Group"
+Mutations	TMB	tmb_data.txt	Mutations/tmb_data.txt	"Tumor_Barcode, SP_Group, TMB"
+Mutations	Lolliplot	lollipop_input_data.txt	Mutations/lollipop_input_data.txt	"Tumor_Barcode, Variant_Classification, Hugo_Symbol, AAChange.refGene, GeneDetail.refGene"
+Mutations	Lolliplot	mutations_manifest.txt	Mutations/mutations_manifest.txt	"Tumor_Barcode, SP_Group"
+SCNA	Inspect Data	scna_data2.txt	SCNA/scna_data2.txt	"Tumor_barcode, chr, startpos, endpos, BAF, pval, LogR, ntot, clone_frac, clone_nMaj, clonenMin, subclone_frac, subclone_nMaj, subclone_nMin, nMaj1_A, nMin1_A, frac1_A, nMaj2_A, frac2_A"
+SCNA	Clustering	scna_data1.txt	SCNA/scna_data1.txt	"Study, Subject, Tumor_Barcode, Tumor_Purity, BB_Ploidy, WGD_Status"
+SCNA	Clustering	scna_data2.txt	SCNA/scna_data2.txt	"Tumor_barcode, chr, startpos, endpos, BAF, pval, LogR, ntot, clone_frac, clone_nMaj, clonenMin, subclone_frac, subclone_nMaj, subclone_nMin, nMaj1_A, nMin1_A, frac1_A, nMaj2_A, frac2_A"
+SCNA	Gistic Output			
+SV	ReCon Plot	sv_data.txt	SV/sv_data.txt	"Tumor_Barcode, chr1, pos1, chr2, pos2, strands"
+SV	ReCon Plot	cn_data.txt	SV/cn_data.txt	"Tumor_Barcode, chr, start, end, copyNumber, minorAlleleCopyNumber"
+Genomic Landscape	View genomePlot	genomePlot_list.txt	Genomic_Landscape/genomePlot_list.txt	"Tumor_Barcode, genomePlot"
+Clonal Evolution	Clonal Evolution 	MutationTime_Proportion.txt	Clonal_Evolution/MutationTime_Proportion.txt	Tumor_Barcode
+Survival Analysis	Survival Analysis	survival_metadata.txt	Survival_Analysis/survival_metadata.txt	"Subject, Tumor_Barcode, Age, Gender, Stage, Smoking, Histology, Survival_Month, Vital_Status, Population, Death"
+Survival Analysis	Survival Analysis	survival_manifest.txt	Survival_Analysis/survival_manifest.txt	"Study, Subject, Tumor_Barcode, Normal_Barcode, SP_Group"
+Survival Analysis	Survival Analysis	survival_data_full.txt	Survival_Analysis/survival_data_full.txt	"Subject, Tumor_Barcode, Gene, Alteration, Type"
+Survival Analysis	Survival Analysis	survival_genomic_alterations.txt	Survival_Analysis/survival_genomic_alterations.txt	"Tumor_Barcode, Genomic Alteration columns"
+Integrative Analysis	Enrichment Analysis	integrative_data_full.txt	Integrative_Analysis/integrative_data_full.txt	"Subject, Tumor_Barcode, Gene, Alteration, Type"
+Integrative Analysis	Enrichment Analysis	integrative_mdata0.txt	Integrative_Analysis/integrative_mdata0.txt	"Tumor_Barcode, Genomic Alteration columns"
+Integrative Analysis	Enrichment Analysis	integrative_covdata.txt	Integrative_Analysis/integrative_covdata.txt	"Tumor_Barcode, Assigned_Population, Gender, Age, Smoking, Histology, Tumor_Purity"
+Integrative Analysis	Enrichment Analysis	integrative_freq.txt	Integrative_Analysis/integrative_freq.txt	"name, Frequency column names"
+Integrative Analysis	Fisher Bar Plot	integrative_mdata0.txt	Integrative_Analysis/integrative_mdata0.txt	"Tumor_Barcode, Genomic Alteration columns"
+Integrative Analysis	Fisher Bar Plot	integrative_group_data.txt	Integrative_Analysis/integrative_group_data.txt	"Tumor_Barcode, SP_Group"
+Integrative Analysis	Association Testing	QC_sample_level.txt	Integrative_Analysis/QC_sample_level.txt	Tumor_Barcode
+Integrative Analysis	Association Testing	QC_subject_level.txt	Integrative_Analysis/QC_subject_level.txt	No required columns
+Integrative Analysis	Association Testing	all_ngspurity_output.txt	Integrative_Analysis/all_ngspurity_output.txt Tumor_Barcode	
+Integrative Analysis	Association Testing	survival_metadata.txt	Integrative_Analysis/survival_metadata.txt	Tumor_Barcode
+Integrative Analysis	Oncoplot	integrative_data_full.txt	Integrative_Analysis/integrative_data_full.txt	"Subject, Tumor_Barcode, Gene, Alteration, Type"
+Integrative Analysis	Oncoplot	integrative_mdata0.txt	Integrative_Analysis/integrative_mdata0.txt	"Tumor_Barcode, Genomic Alteration columns"
+Integrative Analysis	Oncoplot	integrative_freq.txt	Integrative_Analysis/integrative_freq.txt	"name, Frequency column names"
+Integrative Analysis	Genomic Features Wordcloud	integrative_wordcloud_user_data.txt	Integrative_Analysis/integrative_wordcloud_user_data.txt	"Subject, Tumor_Barcode, Gene, Alteration, Type"
+Integrative Analysis	Genomic Features Wordcloud	integrative_freq.txt	Integrative_Analysis/integrative_freq.txt	"name, Frequency column names"
