@@ -1,0 +1,15 @@
+Module Name	Description
+Load Data	Load the data for a selected project into the corresponding modules.
+Study Overview	Brief summary about the project selected.
+Manifest Information	View or inspect sample and subject level data.
+NGSpurity	"NGSpurity pipeline output to investigate purity, ploidy, and clonality of samples."
+Mutations	"Exploration of gene mutations across transcripts. Visualization includes a mutation summary, lollipop plot, and/or TMB plot."
+SCNA	"Inspect SCNA data, perform clustering analysis, and/or visualize GISTIC ouput."
+SV	Generate a ReCon plot to visualize SVs.
+Mutational Signatures	Exploration of data related to mutational signatures. This includes mutation clustering.
+Genomic Landscape	Exploration of the genomic landscape of samples from the selected project.
+Clonal Evolution	Explore measures of mutation time in each sample.
+Survival Analysis	Conduct a survival analysis with all of the genomic alteration data available for the selected project.
+Integrative Analysis	"Multiple options for analyses and testing of the data available from the selected project. These include fisher enrichment testing, fisher test barplot visualization, association testing, oncoplot generation, and word cloud generation."
+Documentation	Project descriptions and module information.
+Frequently Asked Questions	Questions users may have while using the Sherlock-Genome Application.

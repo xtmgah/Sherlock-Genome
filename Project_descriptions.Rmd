@@ -1,0 +1,10 @@
+---
+title: "Project_descriptions.Rmd"
+output: html_document
+---
+#### **Sherlock-*lung* (Sherlock_TCGA)**
+
+Sherlock-*lung* is a comprehensive study that aims to trace lung cancer etiology in never smokers by analyzing genomic data in tumor and surrounding lung tissue. Whole genome sequencing, whole transcriptome, and genome-wide methylation data will be analyzed to identify exogenous and endogenous processes involved in lung tumorigenesis. Analysis of the tumor microenvironment, clonal evolution, and circulating tumor DNA will be conducted in a subgroup of the cases. The molecular landscape will be integrated with histological and radiological features in order to develop a more refined classification of lung cancer in never smokers and provide insights into prognosis and treatment strategies.
+
+For demonstration purposes, the Sherlock-*lung* data included in the Sherlock-Genome application is a subset of the original data set, consisting only of TCGA samples. These samples can be explored by selecting 'Sherlock_TCGA' from the list of projects included in the application.
+

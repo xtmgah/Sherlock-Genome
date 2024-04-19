@@ -1,0 +1,25 @@
+---
+title: "FAQ_Sherlock_Genome"
+output: html_document
+---
+
+##### **What is Sherlock-Genome?**
+Sherlock-Genome is a R Shiny Application built for genomic analysis and visualization. There are several different modules in the application that users can take advantage that allow for a range of capabilities, from simply viewing analysis result visualizations to association testing.
+
+The idea for Sherlock-Genome was developed by Dr. Tongwu Zhang, of the Division of Cancer Epidemiology and Genetics at the National Cancer Institute. The app has been developed by Dr. Zhang and Alyssa Klein.
+
+##### **What types of modules are available in Sherlock-Genome?**
+There are several different modules available in the *Sherlock-Genome* app. These include Study Overview, Manifest Information, NGSpurity, Mutations, SCNA, SV, Mutational Signatures, Genomic Landscape, Clonal Evolution, Survival Analysis, and Integrative Analysis. More information about each of these modules can be found in the Documentation section under Module Info.
+
+##### **Can I upload my own data to the app?**
+You can upload your own data at this time. When opening the app, select the **Upload Project Data** option to get started.
+
+##### **What projects are currently available? Will there be additional projects added in the future?**
+Currently available is a subset of samples from the Sherlock-Lung project. 
+
+##### **Can I download any of the data?**
+Data cannot be downloaded at this time.
+
+##### **Can I download or save any of the results I generate?**
+Almost all modules will allow you to download the plots that you generate. These modules will contain a download button, which will download the plot to your current working directory when clicked. 
+
