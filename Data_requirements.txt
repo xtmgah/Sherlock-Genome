@@ -19,7 +19,7 @@ SCNA	Clustering	scna_data2.txt	SCNA/scna_data2.txt	"Tumor_barcode, chr, startpos
 SCNA	Gistic Output			
 SV	ReCon Plot	sv_data.txt	SV/sv_data.txt	"Tumor_Barcode, chr1, pos1, chr2, pos2, strands"
 SV	ReCon Plot	cn_data.txt	SV/cn_data.txt	"Tumor_Barcode, chr, start, end, copyNumber, minorAlleleCopyNumber"
-Genomic Landscape	View genomePlot	genomePlot_list.txt	Genomic_Landscape/genomePlot_list.txt	"Tumor_Barcode, genomePlot"
+Genomic Landscape	View genomePlot	genomePlot_list.txt	Genomic_Landscape/genomePlot/genomePlot_list.txt	"Tumor_Barcode, genomePlot"
 Clonal Evolution	Clonal Evolution 	MutationTime_Proportion.txt	Clonal_Evolution/MutationTime_Proportion.txt	Tumor_Barcode
 Survival Analysis	Survival Analysis	survival_metadata.txt	Survival_Analysis/survival_metadata.txt	"Subject, Tumor_Barcode, Age, Gender, Stage, Smoking, Histology, Survival_Month, Vital_Status, Population, Death"
 Survival Analysis	Survival Analysis	survival_manifest.txt	Survival_Analysis/survival_manifest.txt	"Study, Subject, Tumor_Barcode, Normal_Barcode, SP_Group"
