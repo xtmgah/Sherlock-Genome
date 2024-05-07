@@ -509,69 +509,69 @@ inspect_data_function <- function(dataframe, type_of_inspection=NULL,column_name
 
 # figure_display_ngspurity function ----------------------------------------------------------------
 # output figures for ngspurity data -- needs to be for others in the future?
-figure_display_ngspurity <- function(tumor_barcode=NULL,battenberg=NULL,type=NULL,project_code=NULL){
-  ngspurity_qc <- read_delim("NGSpurity/ngspurity_qc_file.txt")
-  # pull the filename from the ngspurity_qc_file table
-  file_path <- ngspurity_qc$File[which(ngspurity_qc$Tumor_Barcode==tumor_barcode & ngspurity_qc$Battenberg==battenberg & ngspurity_qc$Type==type)]
-
-  if(os_detect() %in% c("Linux","Darwin")){
-    filename <- sub(".","NGSpurity", file_path)
-    print(getwd())
-    print(filename)
-    list(src = filename, alt = paste0(tumor_barcode, "_", battenberg, "_", type))
-  }else{
-    filename <- sub(".",paste0("Genomic Data/", project_code,"/NGSpurity"), file_path)
-    print(getwd())
-    print(filename)
-    return(filename)
-  }
-}
+# figure_display_ngspurity <- function(tumor_barcode=NULL,battenberg=NULL,type=NULL,project_code=NULL){
+#   ngspurity_qc <- read_delim("NGSpurity/ngspurity_qc_file.txt")
+#   # pull the filename from the ngspurity_qc_file table
+#   file_path <- ngspurity_qc$File[which(ngspurity_qc$Tumor_Barcode==tumor_barcode & ngspurity_qc$Battenberg==battenberg & ngspurity_qc$Type==type)]
+# 
+#   if(os_detect() %in% c("Linux","Darwin")){
+#     filename <- sub(".","NGSpurity", file_path)
+#     print(getwd())
+#     print(filename)
+#     list(src = filename, alt = paste0(tumor_barcode, "_", battenberg, "_", type))
+#   }else{
+#     filename <- sub(".",paste0("Genomic Data/", project_code,"/NGSpurity"), file_path)
+#     print(getwd())
+#     print(filename)
+#     return(filename)
+#   }
+# }
 
 
 #figure_display_mutationTime <- function(tumor_barcode=NULL){
-figure_display_mutationTime <- function(tumor_barcode=NULL, project_code=NULL){
-  #mutationTime_file <- read_delim("Clonal_Evolution/MutationTime/MutationTime_Proportion.txt")
-  # pull the filename from the ngspurity_qc_file table
-  #mut_barcode <- mutationTime_file$Tumor_Barcode[which(mutationTime_file$Tumor_Barcode==tumor_barcode)]
-  mut_barcode <- tumor_barcode
-  print(mut_barcode)
-  file_path <- paste0("Clonal_Evolution/MutationTime/", mut_barcode, "_MTime.pdf")
-  print(file_path)
-  
-  if(os_detect() %in% c("Linux","Darwin")){
-    filename <- file_path
-    print(getwd())
-    # print(filename)
-    list(src = filename, alt = paste0(tumor_barcode, "_MTime.pdf"))
-  }else{
-    filename <- sub(".",paste0("Genomic Data/", project_code,"/Clonal_Evolution/"), file_path)
-    print(getwd())
-    print(filename)
-    return(filename)
-  }
-}
+# figure_display_mutationTime <- function(tumor_barcode=NULL, project_code=NULL){
+#   #mutationTime_file <- read_delim("Clonal_Evolution/MutationTime/MutationTime_Proportion.txt")
+#   # pull the filename from the ngspurity_qc_file table
+#   #mut_barcode <- mutationTime_file$Tumor_Barcode[which(mutationTime_file$Tumor_Barcode==tumor_barcode)]
+#   mut_barcode <- tumor_barcode
+#   print(mut_barcode)
+#   file_path <- paste0("Clonal_Evolution/MutationTime/", mut_barcode, "_MTime.pdf")
+#   print(file_path)
+#   
+#   if(os_detect() %in% c("Linux","Darwin")){
+#     filename <- file_path
+#     print(getwd())
+#     # print(filename)
+#     list(src = filename, alt = paste0(tumor_barcode, "_MTime.pdf"))
+#   }else{
+#     filename <- sub(".",paste0("Genomic Data/", project_code,"/Clonal_Evolution/"), file_path)
+#     print(getwd())
+#     print(filename)
+#     return(filename)
+#   }
+# }
 
-figure_display_clustered_mut <- function(tumor_barcode=NULL, project_code=NULL){
-  #mutationTime_file <- read_delim("Clonal_Evolution/MutationTime/MutationTime_Proportion.txt")
-  # pull the filename from the ngspurity_qc_file table
-  #mut_barcode <- mutationTime_file$Tumor_Barcode[which(mutationTime_file$Tumor_Barcode==tumor_barcode)]
-  mut_barcode <- tumor_barcode
-  print(mut_barcode)
-  file_path <- paste0("Mutational_Signatures/Clustered_Mutations/", mut_barcode, "_Mutation_Clustering.pdf")
-  print(file_path)
-  
-  if(os_detect() %in% c("Linux","Darwin")){
-    filename <- file_path
-    print(getwd())
-    # print(filename)
-    list(src = filename, alt = paste0(tumor_barcode, "_Mutation_Clustering.pdf"))
-  }else{
-    filename <- sub(".",paste0("Genomic Data/", project_code,"/"), file_path)
-    print(getwd())
-    print(filename)
-    return(filename)
-  }
-}
+# figure_display_clustered_mut <- function(tumor_barcode=NULL, project_code=NULL){
+#   #mutationTime_file <- read_delim("Clonal_Evolution/MutationTime/MutationTime_Proportion.txt")
+#   # pull the filename from the ngspurity_qc_file table
+#   #mut_barcode <- mutationTime_file$Tumor_Barcode[which(mutationTime_file$Tumor_Barcode==tumor_barcode)]
+#   mut_barcode <- tumor_barcode
+#   print(mut_barcode)
+#   file_path <- paste0("Mutational_Signatures/Clustered_Mutations/", mut_barcode, "_Mutation_Clustering.pdf")
+#   print(file_path)
+#   
+#   if(os_detect() %in% c("Linux","Darwin")){
+#     filename <- file_path
+#     print(getwd())
+#     # print(filename)
+#     list(src = filename, alt = paste0(tumor_barcode, "_Mutation_Clustering.pdf"))
+#   }else{
+#     filename <- sub(".",paste0("Genomic Data/", project_code,"/"), file_path)
+#     print(getwd())
+#     print(filename)
+#     return(filename)
+#   }
+# }
 
 figure_display_tmb <- function(filename){
   file_path <- paste0("./", filename)
@@ -591,27 +591,27 @@ figure_display_tmb <- function(filename){
 }
 
 
-figure_display_scna_gistic <- function(amp_or_del){
-  #mutationTime_file <- read_delim("Clonal_Evolution/MutationTime/MutationTime_Proportion.txt")
-  # pull the filename from the ngspurity_qc_file table
-  #mut_barcode <- mutationTime_file$Tumor_Barcode[which(mutationTime_file$Tumor_Barcode==tumor_barcode)]
-  
-  print(amp_or_del)
-  file_path <- paste0("SCNA/", amp_or_del, "_qplot.pdf")
-  print(file_path)
-  
-  if(os_detect() %in% c("Linux","Darwin")){
-    filename <- file_path
-    print(getwd())
-    # print(filename)
-    list(src = filename, alt = paste0(amp_or_del, "_qplot.pdf"))
-  }else{
-    filename <- sub(".",paste0("Genomic Data/", project_code,"/"), file_path)
-    print(getwd())
-    print(filename)
-    return(filename)
-  }
-}
+# figure_display_scna_gistic <- function(amp_or_del){
+#   #mutationTime_file <- read_delim("Clonal_Evolution/MutationTime/MutationTime_Proportion.txt")
+#   # pull the filename from the ngspurity_qc_file table
+#   #mut_barcode <- mutationTime_file$Tumor_Barcode[which(mutationTime_file$Tumor_Barcode==tumor_barcode)]
+#   
+#   print(amp_or_del)
+#   file_path <- paste0("SCNA/", amp_or_del, "_qplot.pdf")
+#   print(file_path)
+#   
+#   if(os_detect() %in% c("Linux","Darwin")){
+#     filename <- file_path
+#     print(getwd())
+#     # print(filename)
+#     list(src = filename, alt = paste0(amp_or_del, "_qplot.pdf"))
+#   }else{
+#     filename <- sub(".",paste0("Genomic Data/", project_code,"/"), file_path)
+#     print(getwd())
+#     print(filename)
+#     return(filename)
+#   }
+# }
 
 #fisher_result_test_run <- fishergroup(vartmp=vartmp, sp_group=NULL, samplelist=NULL, var2name="WGD_Status|Overall_Feature", excludes= NULL, excludes_cat= NULL, keeps= NULL, keeps_cat= NULL, minfreq= 0.03, freq_column= 'Freq', method= "fisher.test", glm_formula= "Var1 ~ Var2 + Gender", covdata= covdata0, subfold="TMP", anndata=NULL, fdrcutoff=0.1)
 #fisher_result_test_run_glm <- fishergroup(vartmp=vartmp, sp_group=NULL, samplelist=NULL, var2name="WGD_Status|Overall_Feature", excludes= NULL, excludes_cat= NULL, keeps= NULL, keeps_cat= NULL, minfreq= 0.03, freq_column= 'Freq', method= "glm", glm_formula= "Var1 ~ Var2 + Gender", covdata= covdata0, subfold="TMP", anndata=NULL, fdrcutoff=0.1)

@@ -49,9 +49,9 @@ pkg_check_fcn_bioconductor <- lapply(packages_req_bioconductor,function(x){
 pkg_check_fcn_from_github <- lapply(packages_req_from_github,function(x){
   if(!(x %in% installed.packages())){
     if(x == 'ReConPlot'){
-      devtools::install_gitub(paste0('cortes-ciricano-lab/',x))
+      devtools::install_github(paste0('cortes-ciriano-lab/',x))
     }else{
-      devtools::install_gitub(x)
+      devtools::install_github(x)
     }
     #load the package after installing it
     library(x, character.only = TRUE)
@@ -240,7 +240,7 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                        # uiOutput("ui_select_project"),
                        # uiOutput("ui_reset_project"),
                        #selectInput("project_code","Select a project:", c("BRCA_HK", "mWGS","Sherlock")),
-                       selectizeInput("project_code","Select a project:", choices = c("BRCA_HK", "mWGS","Sherlock_TCGA"), selected = NULL, multiple = TRUE, 
+                       selectizeInput("project_code","Select a project:", choices = c("Sherlock_TCGA"), selected = NULL, multiple = TRUE, 
                                       options = list(maxItems = 1)),
                        #pickerInput("project_code","Select a project:", c("BRCA_HK", "mWGS","Sherlock"), selected= "Sherlock"),
                        #actionButton("select", "Select Project", style = "background-color: #3983C0; border-color:#3983C0; border-radius: 28px; color: white;")),
@@ -273,7 +273,7 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
 
                tabItem(tabName = "sample_qc", h2("Manifest Information"),hr(), tabsetPanel(id="qc_tabs",tabPanel(value="qc_sample", "Sample Level", tabsetPanel(id="qc_sample_subtabs",
                                                                                                                                               #tabPanel(value="qc_view_sample_data","View Sample Level",h4("Select the columns you would like to view from the dropdown below:"),conditionalPanel("!input.filter_df_sample",uiOutput("qc_sample_header_output")),conditionalPanel("input.filter_df_sample",uiOutput("qc_sample_header_output2")),uiOutput("filter_input_sample"), actionButton("filter_df_sample","Apply Filter(s)"), actionButton("reset_filter_df_sample", "Clear Filters"), conditionalPanel(condition= "!input.filter_df_sample",DT::dataTableOutput("qc_sample_table")), conditionalPanel("input.filter_df_sample",DT::dataTableOutput("qc_sample_table2"))),
-                                                                                                                                              tabPanel(value="qc_view_sample_data","View Sample Level",hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Select the columns you would like to view from the dropdown below."),uiOutput("qc_sample_header_output"),h4('Enter any filters you would like to apply using the notation in the example.'), 
+                                                                                                                                              tabPanel(value="qc_view_sample_data","View Sample Level",hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Select the columns you would like to view from the dropdown below."),uiOutput("qc_sample_header_output"),h4("Enter any filters you would like to apply using the notation in the example. Click 'Apply' anytime you change the inputs."), 
                                                                                                                                                                                                                                                          #div(style="display:inline-block;vertical-align:top;",
                                                                                                                                                                                                                                                          tags$style(HTML('#check_input_sample {margin-top: 25px}')),
                                                                                                                                                                                                                                                              splitLayout(cellWidths = c("60%","40%"),
@@ -281,7 +281,7 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                                                                                                                                                                                                                                                                   textInput(inputId="user_filter_input_sample",label="Filter Dataframe",placeholder = "Wave == 'W3'",value=''),
                                                                                                                                                                                                                                                                   actionButton('check_input_sample', 'Check Input', class = 'action-buttons-app')), 
                                                                                                                                                                                                                                                          textOutput('input_check_result_sample'),
-                                                                                                                                                                                                                                                         actionButton("filter_df_sample","Apply/Reset", class = 'action-buttons-app')),
+                                                                                                                                                                                                                                                         actionButton("filter_df_sample","Apply", class = 'action-buttons-app')),
                                                                                                                                                        conditionalPanel(condition= "!input.filter_df_sample",DT::dataTableOutput("qc_sample_table_orig")), conditionalPanel("input.filter_df_sample",DT::dataTableOutput("qc_sample_table"))),
                                                                                                                                                #tabPanel(value = "qc_view_sample_data", "View Sample Level", h4("Select the columns you would like to view from the dropdown below:"), panel(uiOutput("qc_sample_header_output"), uiOutput("qc_sample_new_filter"), status = "primary"), DT::dataTableOutput(outputId = "qc_sample_table")),
                                                                                                                                               tabPanel(value="qc_inspect_sample_data","Inspect Sample Level", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Inspect the data based on the following options:"),
@@ -296,14 +296,14 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                                                                                                                                                        #uiOutput("inspect_df_qc_sample")),
                                                                                                                                                        plotOutput("inspect_sample_plot")))),
                                                                                       tabPanel(value="qc_subject","Subject Level", tabsetPanel(id="qc_subject_subtabs",
-                                                                                                                                              tabPanel(value="qc_view_subject_data", "View Subject Level",hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Select the columns you would like to view from the dropdown below."),uiOutput("qc_subject_header"), h4("Enter any filters you would like to apply using the notation in the example."),
+                                                                                                                                              tabPanel(value="qc_view_subject_data", "View Subject Level",hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Select the columns you would like to view from the dropdown below."),uiOutput("qc_subject_header"), h4("Enter any filters you would like to apply using the notation in the example. Click 'Apply' anytime you change the inputs."),
                                                                                                                                                                                                                                                             tags$style(HTML('#check_input_subject {margin-top: 25px}')),
                                                                                                                                                                                                                                                             splitLayout(cellWidths = c("60%","40%"),
                                                                                                                                                                                                                                                                         #uiOutput("filter_input_subject"),
                                                                                                                                                                                                                                                                         textInput(inputId="user_filter_input_subject",label="Filter Dataframe",placeholder = "source_material == 'Lung'",value=""),
                                                                                                                                                                                                                                                                         actionButton('check_input_subject', 'Check Input', class = 'action-buttons-app')), 
                                                                                                                                                                                                                                                             textOutput('input_check_result_subject'),
-                                                                                                                                                                                                                                                            actionButton("filter_df_subject","Apply/Reset", class = 'action-buttons-app')),conditionalPanel(condition= "!input.filter_df_subject",DT::dataTableOutput("qc_subject_table_orig")), conditionalPanel("input.filter_df_subject",DT::dataTableOutput("qc_subject_table"))),
+                                                                                                                                                                                                                                                            actionButton("filter_df_subject","Apply", class = 'action-buttons-app')),conditionalPanel(condition= "!input.filter_df_subject",DT::dataTableOutput("qc_subject_table_orig")), conditionalPanel("input.filter_df_subject",DT::dataTableOutput("qc_subject_table"))),
                                                                                                                                               tabPanel(value="qc_inspect_subject_data","Inspect Subject Level", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Inspect the data based on the following options:"),
                                                                                                                                                        h4(tags$li("cat: summary and comparison of categorical columns")),
                                                                                                                                                        h4(tags$li("cat_levels: summary and comparison of the most common levels in categorical columns")),
@@ -316,14 +316,14 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                                                                                                                                                        plotOutput("inspect_subject_plot")))))),
 
                tabItem(tabName = "NGSpurity", h2("NGSpurity"), hr(),tabsetPanel(id="ngspurity_tabs",
-                        tabPanel(value="ngs_view_data_qc","View Data QC",hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Select the columns you would like to view from the dropdown below."), uiOutput("ngs_purity_header"), h4("Enter any filters you would like to apply using the notation in the example."),
+                        tabPanel(value="ngs_view_data_qc","View Data QC",hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Select the columns you would like to view from the dropdown below."), uiOutput("ngs_purity_header"), h4("Enter any filters you would like to apply using the notation in the example. Click 'Apply' anytime you change the inputs."),
                           tags$style(HTML('#check_input_ngspurity {margin-top: 25px}')),
                           splitLayout(cellWidths = c("60%","40%"),
                                       #uiOutput("filter_input_ngspurity"), 
                                       textInput(inputId="user_filter_input_ngspurity",label="Filter Dataframe",placeholder = "MCN_WGD == 'nWGD'",value=""),
                                       actionButton('check_input_ngspurity', 'Check Input', class = 'action-buttons-app')),
                           textOutput('input_check_result_ngspurity'),
-                          actionButton("filter_df_ngspurity", "Apply/Reset", class = 'action-buttons-app')),
+                          actionButton("filter_df_ngspurity", "Apply", class = 'action-buttons-app')),
                           conditionalPanel(condition= "!input.filter_df_ngspurity",DT::dataTableOutput("qc_ngspurity_table_orig")), conditionalPanel("input.filter_df_ngspurity",DT::dataTableOutput("qc_ngspurity_table"))),
                         tabPanel(value="ngs_inspect_data","Inspect Data", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Inspect the data based on the following options. The meaning of each is as follows:"),
                           h4(tags$li("cat: summary and comparison of categorical columns")),
@@ -337,7 +337,7 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                           tags$style(type="text/css",  ".shiny-output-error { visibility: hidden; }", ".shiny-output-error:before { visibility: hidden; }"),
                           plotOutput("inspect_ngs_plot", height="800px")),
 
-                                  if(os_detect() %in% c("Linux","Darwin")){
+                                  #if(os_detect() %in% c("Linux","Darwin")){
                                     tabPanel(value="ngs_view_figures","View Figures", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE,h4("Using the dropdown menus below, select the figure you would like to view. The figure will be updated as choices from the dropdown menus are changed."),
                                                                                                                                         #uiOutput("ngspurity_barcode"),
                                                                                                                                         selectInput("tumor_barcode_to_inspect","Select one Tumor Barcode to inspect:", choices= NULL, multiple= FALSE),
@@ -347,18 +347,19 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                                                                                                                                         selectInput("type_to_inspect","Select one Type to inspect:", choices= NULL, multiple= FALSE)),
                                                                                                                                         #tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),
                                                                                                                                         #uiOutput("figure_pdf"))
-                                                                                                                                        imageOutput("figure_pdf",width = "50%",height = "50%"))
-                                  }else{
-                                    tabPanel(value="ngs_view_figures","View Figures", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Using the dropdown menus below, select the figure you would like to view. The figure will be updated as choices from the dropdown menus are changed."),
-                                                                                                                                        #uiOutput("ngspurity_barcode"),
-                                                                                                                                        selectInput("tumor_barcode_to_inspect","Select one Tumor Barcode to inspect:", choices= NULL, multiple= FALSE),
-                                                                                                                                        #uiOutput("ngspurity_battenberg"),
-                                                                                                                                        selectInput("battenberg_to_inspect","Select one Battenberg to inspect:", choices= NULL, multiple= FALSE),
-                                                                                                                                        #uiOutput("ngspurity_type")),
-                                                                                                                                        selectInput("type_to_inspect","Select one Type to inspect:", choices= NULL, multiple= FALSE)),
-                                                                                                                                        #tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),
-                                                                                                                                        uiOutput("figure_pdf"))
-                                  },)),
+                                                                                                                                        imageOutput("figure_ngspurity",width = "50%",height = "50%"))
+                                  #}else{
+                                    # tabPanel(value="ngs_view_figures","View Figures", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Using the dropdown menus below, select the figure you would like to view. The figure will be updated as choices from the dropdown menus are changed."),
+                                    #                                                                                                     #uiOutput("ngspurity_barcode"),
+                                    #                                                                                                     selectInput("tumor_barcode_to_inspect","Select one Tumor Barcode to inspect:", choices= NULL, multiple= FALSE),
+                                    #                                                                                                     #uiOutput("ngspurity_battenberg"),
+                                    #                                                                                                     selectInput("battenberg_to_inspect","Select one Battenberg to inspect:", choices= NULL, multiple= FALSE),
+                                    #                                                                                                     #uiOutput("ngspurity_type")),
+                                    #                                                                                                     selectInput("type_to_inspect","Select one Type to inspect:", choices= NULL, multiple= FALSE)),
+                                    #                                                                                                     #tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),
+                                    #                                                                                                     uiOutput("figure_pdf"))
+                                   #},
+                                    )),
 
                tabItem(tabName = "mutations", h2("Mutations"),hr(),tabsetPanel(id="mutation_tabs", 
                                                                           tabPanel(value = "mutation_summary_tab", "Mutation Summary", hr(style = "border-top: 1px solid #ffffff;"), 
@@ -460,39 +461,41 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                                        tabPanel(value = 'clustering_table', 'Clustering Data Table', DT::dataTableOutput('scna_clustering_table')),
                                        tabPanel(value = 'clustering_plot', 'Clustering Plot', plotOutput('scna_clustering_heatmap', height = 1000),
                                                 conditionalPanel(condition = 'input.scna_cluster_calculate', downloadButton("download_scna_clustering_plot","Download Plot", class = 'action-buttons-app'))))),
-                  # tabPanel(value = 'scna_gistic_output', 'GISTIC Output',hr(style = "border-top: 1px solid #ffffff;"),
-                  #          box(width = 12, title = 'Instructions', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
-                  #              h4('Below you will find GISTIC Output. What GISTIC is...and source to learn more..github/documentation/manuscript'),
-                  #              radioGroupButtons(
-                  #                inputId = "gistic_out_select",
-                  #                label = NULL, 
-                  #                choices = c("Amplification Plot", "Deletion Plot"),
-                  #                status = "primary",
-                  #                selected = 'Amplification Plot'
-                  #              )))),
-                        if(os_detect() %in% c("Linux","Darwin")){
-                          tabPanel(value="scna_gistic_output","GISTIC Output", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
+                                       tabPanel(value="scna_gistic_output","GISTIC Output", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE,
                                                                                    h4('Below users can explore GISTIC output. Select ‘Amplification’ or ‘Deletion’ to display the corresponding plot. Documentation for GISTIC, which identifies regions of amplification or deletion across samples, can be found', a(href = 'https://broadinstitute.github.io/gistic2/', 'here.')),
                                                                                    radioGroupButtons(
                                                                                      inputId = "gistic_out_select",
-                                                                                     label = NULL, 
+                                                                                     label = NULL,
                                                                                      choices = c("Amplification Plot", "Deletion Plot"),
                                                                                      status = "primary",
                                                                                      selected = 'Amplification Plot'
                                                                                    )),
                                    tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),imageOutput("scna_gistic_plot",width = "50%",height = "50%"))
-                        }else{
-                          tabPanel(value="scna_gistic_output","GISTIC Output", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
-                                                                                   h4('Below users can explore GISTIC output. Select ‘Amplification’ or ‘Deletion’ to display the corresponding plot. Documentation for GISTIC, which identifies regions of amplification or deletion across samples, can be found', a(href = 'https://broadinstitute.github.io/gistic2/', 'here.')), 
-                                                                                   radioGroupButtons(
-                                                                                     inputId = "gistic_out_select",
-                                                                                     label = NULL, 
-                                                                                     choices = c("Amplification Plot", "Deletion Plot Test"),
-                                                                                     status = "primary",
-                                                                                     selected = 'Amplification Plot'
-                                                                                   )),
-                                   tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),uiOutput("scna_gistic_plot"))
-                        })),
+
+                        # if(os_detect() %in% c("Linux","Darwin")){
+                        #   tabPanel(value="scna_gistic_output","GISTIC Output", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
+                        #                                                            h4('Below users can explore GISTIC output. Select ‘Amplification’ or ‘Deletion’ to display the corresponding plot. Documentation for GISTIC, which identifies regions of amplification or deletion across samples, can be found', a(href = 'https://broadinstitute.github.io/gistic2/', 'here.')),
+                        #                                                            radioGroupButtons(
+                        #                                                              inputId = "gistic_out_select",
+                        #                                                              label = NULL, 
+                        #                                                              choices = c("Amplification Plot", "Deletion Plot"),
+                        #                                                              status = "primary",
+                        #                                                              selected = 'Amplification Plot'
+                        #                                                            )),
+                        #            tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),imageOutput("scna_gistic_plot",width = "50%",height = "50%"))
+                        # }else{
+                        #   tabPanel(value="scna_gistic_output","GISTIC Output", hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
+                        #                                                            h4('Below users can explore GISTIC output. Select ‘Amplification’ or ‘Deletion’ to display the corresponding plot. Documentation for GISTIC, which identifies regions of amplification or deletion across samples, can be found', a(href = 'https://broadinstitute.github.io/gistic2/', 'here.')), 
+                        #                                                            radioGroupButtons(
+                        #                                                              inputId = "gistic_out_select",
+                        #                                                              label = NULL, 
+                        #                                                              choices = c("Amplification Plot", "Deletion Plot Test"),
+                        #                                                              status = "primary",
+                        #                                                              selected = 'Amplification Plot'
+                        #                                                            )),
+                        #            tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),uiOutput("scna_gistic_plot"))
+                        # }
+                  )),
 
                tabItem(tabName = "sv", h2("SV"), hr(),
                        tabsetPanel(id = 'sv_tabs',
@@ -511,7 +514,7 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                tabItem(tabName = "mutational_signature", h2("Mutational Signatures"), hr(), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
                                                                                                 h4('This module allows for easy viewing of mutational signature analysis results.'),
                                                                                                 h4('The mutational signature analysis was completed using the', a(href = 'https://github.com/AlexandrovLab/SigProfilerClusters', 'SigProfilerClusters tool'), 'developed by the Alexandrov lab. The paper for the tool can be found', a(href = 'https://academic.oup.com/bioinformatics/article/38/13/3470/6589887?login=false', 'here.')),
-                                                                                                h4("Select a tumor barcode from the dropdown list below to display a mutational signature analysis plot for the selected sample."),selectizeInput("clustered_mut_barcodes", "Select one Tumor Barcode:", choices= NULL, multiple= FALSE)), plotOutput("figure_pdf_clustered_mut")),
+                                                                                                h4("Select a tumor barcode from the dropdown list below to display a mutational signature analysis plot for the selected sample."),selectizeInput("clustered_mut_barcodes", "Select one Tumor Barcode:", choices= NULL, multiple= FALSE)), imageOutput("figure_pdf_clustered_mut")),
 
                tabItem(tabName = "genomic_landscape", h2("Genomic Landscape"),hr(),
                tabsetPanel(id="genomic_landscape_tabs",
@@ -525,20 +528,29 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                               imageOutput("genomePlot_figure")))),
 
                tabItem(tabName = "clonal_evolution", h2("Clonal Evolution"),hr(),
-                       if(os_detect() %in% c("Linux","Darwin")){
-                         tabPanel(value="mutationTime_view_figures","View Figures", box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
-                                                                                        h4('This module allows for the exploration of mutation time for samples in a selected project.'),
-                                                                                        h4("The plots displayed below were generated using the", a("MutationTimeR R package", href="https://github.com/Nik-Zainal-Group/signature.tools.lib"), code("plotSample()", style = "font-size: 16px"), "function."),
-                                                                                        h4("Select one tumor barcode from the dropdown below to explore clonal evolution of samples in the selected project, with regard to VAF, copy number, and mutation time."),
-                                                                                        #uiOutput("mutation_time_barcode"),
-                                                                                        pickerInput("tumor_barcode_mutation_time","Select one Tumor Barcode:", choices= NULL, multiple= FALSE, options= list(pickerOptions(liveSearch=TRUE, dropupAuto = FALSE), style = 'picker-inputs-app'))),
-                                                                                        tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),imageOutput("figure_pdf_mutation_time",width = "50%",height = "50%"))
-                       }else{
-                         tabPanel(value="mutationTime_view_figures","View Figures", box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Select one tumor barcode from the dropdown below to explore clonal evolution of samples in the selected project, with regard to VAF, copy number, and mutation time."), 
-                                                                                        #uiOutput("mutation_time_barcode")
-                                                                                        pickerInput("tumor_barcode_mutation_time","Select one Tumor Barcode:", choices= NULL, multiple= FALSE, options= list(pickerOptions(liveSearch=TRUE, dropupAuto = FALSE), style = 'picker-inputs-app'))),
-                                                                                        tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),uiOutput("figure_pdf_mutation_time"))
-                       }),
+                       box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
+                                                                                            h4('This module allows for the exploration of mutation time for samples in a selected project.'),
+                                                                                            h4("The plots displayed below were generated using the", a("MutationTimeR R package", href="https://github.com/Nik-Zainal-Group/signature.tools.lib"), code("plotSample()", style = "font-size: 16px"), "function."),
+                                                                                            h4("Select one tumor barcode from the dropdown below to explore clonal evolution of samples in the selected project, with regard to VAF, copy number, and mutation time."),
+                                                                                            #uiOutput("mutation_time_barcode"),
+                                                                                            pickerInput("tumor_barcode_mutation_time","Select one Tumor Barcode:", choices= NULL, multiple= FALSE, options= list(pickerOptions(liveSearch=TRUE, dropupAuto = FALSE), style = 'picker-inputs-app'))),
+                                                                                            tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),imageOutput("figure_pdf_mutation_time",width = "50%",height = "50%")),
+
+                       # if(os_detect() %in% c("Linux","Darwin")){
+                       #   tabPanel(value="mutationTime_view_figures","View Figures", box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
+                       #                                                                  h4('This module allows for the exploration of mutation time for samples in a selected project.'),
+                       #                                                                  h4("The plots displayed below were generated using the", a("MutationTimeR R package", href="https://github.com/Nik-Zainal-Group/signature.tools.lib"), code("plotSample()", style = "font-size: 16px"), "function."),
+                       #                                                                  h4("Select one tumor barcode from the dropdown below to explore clonal evolution of samples in the selected project, with regard to VAF, copy number, and mutation time."),
+                       #                                                                  #uiOutput("mutation_time_barcode"),
+                       #                                                                  pickerInput("tumor_barcode_mutation_time","Select one Tumor Barcode:", choices= NULL, multiple= FALSE, options= list(pickerOptions(liveSearch=TRUE, dropupAuto = FALSE), style = 'picker-inputs-app'))),
+                       #                                                                  tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),imageOutput("figure_pdf_mutation_time",width = "50%",height = "50%"))
+                       # }else{
+                       #   tabPanel(value="mutationTime_view_figures","View Figures", box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("Select one tumor barcode from the dropdown below to explore clonal evolution of samples in the selected project, with regard to VAF, copy number, and mutation time."), 
+                       #                                                                  #uiOutput("mutation_time_barcode")
+                       #                                                                  pickerInput("tumor_barcode_mutation_time","Select one Tumor Barcode:", choices= NULL, multiple= FALSE, options= list(pickerOptions(liveSearch=TRUE, dropupAuto = FALSE), style = 'picker-inputs-app'))),
+                       #                                                                  tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),uiOutput("figure_pdf_mutation_time"))
+                       # }
+                       #),
 
                tabItem(tabName = "survival_analysis", h2("Survival Analysis"), hr(), box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, h4("This module allows the user to conduct a survival analysis using the genomic alteration data available for the selected project."),
                        # tags$ol(tags$li("Select one genomic alteration from the dropdown list."),

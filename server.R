@@ -444,7 +444,7 @@ server <- function(input, output, session){
         }else{
           n_col <- 6
         }
-        datatable(data_qc_sample %>% select(1:n_col),options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
+        datatable(data_qc_sample %>% select(all_of((1:n_col))),options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
 
       output$qc_sample_table<- DT::renderDataTable({datatable(df_filter_reactive(), options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))}) %>% bindEvent(input$filter_df_sample)
       
@@ -473,7 +473,7 @@ server <- function(input, output, session){
         }else{
           n_col <- 6
         }
-        datatable(data_qc_subject %>% select(1:6),options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
+        datatable(data_qc_subject %>% select(all_of((1:n_col))),options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
 
       output$qc_subject_table <- DT::renderDataTable({datatable(df_filter_reactive(),options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))}) %>% bindEvent(input$filter_df_subject)
 
@@ -623,19 +623,33 @@ server <- function(input, output, session){
 ########### NGSpurity ###############################################
 
   # reactive to call figure_display() function above
-  figure_output <- reactive({
-    req(input$tumor_barcode_to_inspect)
-    req(input$battenberg_to_inspect)
-    req(input$type_to_inspect)
+  # figure_output <- reactive({
+  #   req(input$tumor_barcode_to_inspect)
+  #   req(input$battenberg_to_inspect)
+  #   req(input$type_to_inspect)
+  #   tumor_barcode = input$tumor_barcode_to_inspect
+  #   battenberg = input$battenberg_to_inspect
+  #   type = input$type_to_inspect
+  #   project_code = input$project_code
+  #   if(os_detect() %in% c("Linux","Darwin")){
+  #     return(figure_display_ngspurity(tumor_barcode, battenberg,type,project_code))
+  #   }else{
+  #     return(src=figure_display_ngspurity(tumor_barcode, battenberg,type,project_code))
+  #   }
+  # })
+  
+  figure_output_ngspurity <- reactive({
+    ngspurity_qc <- read_delim("NGSpurity/ngspurity_qc_file.txt")
     tumor_barcode = input$tumor_barcode_to_inspect
     battenberg = input$battenberg_to_inspect
     type = input$type_to_inspect
-    project_code = input$project_code
-    if(os_detect() %in% c("Linux","Darwin")){
-      return(figure_display_ngspurity(tumor_barcode, battenberg,type,project_code))
-    }else{
-      return(src=figure_display_ngspurity(tumor_barcode, battenberg,type,project_code))
-    }
+
+    ngspurity_qc_figure <- ngspurity_qc %>% filter(Tumor_Barcode == input$tumor_barcode_to_inspect) %>% filter(Battenberg == input$battenberg_to_inspect) %>% filter(Type == input$type_to_inspect) %>% pull(File)
+    print(ngspurity_qc_figure)
+    
+    filename_ngs <- sub(".","NGSpurity", ngspurity_qc_figure)
+    # print(filename)
+    
   })
 
   observeEvent(input$submit_int_ext_data,{
@@ -662,7 +676,7 @@ server <- function(input, output, session){
         }else{
           n_col <- 6
         }
-        datatable(data_ngs %>% select(1:n_col),options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
+        datatable(data_ngs %>% select(all_of((1:n_col))),options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))})
       
       output$qc_ngspurity_table <- DT::renderDataTable({datatable(df_filter_reactive(),options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))}) %>% bindEvent(input$filter_df_ngspurity)
 
@@ -687,6 +701,7 @@ server <- function(input, output, session){
 
       updateSelectInput(session, 'tumor_barcode_to_inspect', label = "Select one Tumor Barcode to inspect:", choices= unique(ngspurity_qc$Tumor_Barcode))
 
+      
       observe({
         x <- input$tumor_barcode_to_inspect
 
@@ -701,11 +716,14 @@ server <- function(input, output, session){
 
       })
 
-      if(os_detect() %in% c("Linux","Darwin")){
-        output$figure_pdf <-  renderImage({figure_output()},deleteFile=FALSE)
-      }else{
-        output$figure_pdf <- renderUI({ tags$iframe(style="height:1000px; width:100%", src= figure_output())})
-      }
+      # if(os_detect() %in% c("Linux","Darwin")){
+      #   output$figure_pdf <-  renderImage({figure_output()},deleteFile=FALSE)
+      # }else{
+      #   output$figure_pdf <- renderUI({ tags$iframe(style="height:1000px; width:100%", src= figure_output())})
+      # }
+      
+      output$figure_ngspurity <- renderImage({list(src=figure_output_ngspurity(),width="800px", height = "auto", alt=figure_output_ngspurity())}, deleteFile = FALSE)
+
 
     }
   })
@@ -1165,9 +1183,10 @@ server <- function(input, output, session){
     }
 
 
-    return(figure_display_scna_gistic(amp_or_del))
+    #return(figure_display_scna_gistic(amp_or_del))
 
   })
+
 
   observeEvent(input$submit_int_ext_data,{
     if("SCNA" %in% file_list_reactive()){
@@ -1198,12 +1217,14 @@ server <- function(input, output, session){
         output$scna_table<- DT::renderDataTable({datatable(df_filter_reactive(), options=list(searchHighlight=TRUE),filter=list(position="top",clear=TRUE,plain=FALSE))}) %>% bindEvent(input$filter_scna_table)
 
         # gistic output
-        if(os_detect() %in% c("Linux","Darwin")){
-          output$scna_gistic_plot <-  renderImage({figure_display_scna_gistic_output()},deleteFile=FALSE)
-        }else{
-          output$scna_gistic_plot <- renderUI({ tags$iframe(style="height:1000px; width:60%", src= figure_display_scna_gistic_output())})
-        }
-
+        # if(os_detect() %in% c("Linux","Darwin")){
+        #   output$scna_gistic_plot <-  renderImage({figure_display_scna_gistic_output()},deleteFile=FALSE)
+        # }else{
+        #   output$scna_gistic_plot <- renderUI({ tags$iframe(style="height:1000px; width:60%", src= figure_display_scna_gistic_output())})
+        # }
+        
+        output$scna_gistic_plot <- renderImage({list(src=paste0("SCNA/",figure_display_scna_gistic_output(), "_qplot.png"),width="auto", height = "1000px", alt=paste0(figure_display_scna_gistic_output(), '_qplot.png'))}, deleteFile = FALSE)
+        
       }
     
   })
@@ -1374,53 +1395,79 @@ server <- function(input, output, session){
   
 ######### Mutational Signatures ###############################################
 
-  figure_output_clustered_mut <- reactive({
-    req(input$clustered_mut_barcodes)
-    tumor_barcode = input$clustered_mut_barcodes
-    if(!is.null(input$project_code)){ # project included in the app
-      project_code <- input$project_code
-    }else{ # user project
-      project_code <- 'User_project'
-    }
-    if(os_detect() %in% c("Linux","Darwin")){
-      return(figure_display_clustered_mut(tumor_barcode, project_code))
-    }else{
-      return(src=figure_display_clustered_mut(tumor_barcode, project_code))
-    }
-
-  })
-
   observeEvent(input$submit_int_ext_data,{
     if("Mutational Signatures" %in% file_list_reactive()){
       if(is.null(input$project_code)){
-          print(paste0('mut_sigs_files:',list.files('Mutational_Signatures/Clustered_Mutations')))
-          file_list <- list.files('Mutational_Signatures/Clustered_Mutations')
-          print(file_list)
-          barcodes <- c()
-          for(each in file_list){
-            print(each)
-            barcode <- str_split(each, "_")[[1]][1]
-            barcodes <- append(barcodes, barcode)
-          }
-
-          print(paste0('barcodes:',barcodes))
-          updateSelectizeInput(session, 'clustered_mut_barcodes', choices = barcodes, server = TRUE)
+        print(paste0('mut_sigs_files:',list.files('Mutational_Signatures/Clustered_Mutations')))
+        file_list <- list.files('Mutational_Signatures/Clustered_Mutations')
+        print(file_list)
+        barcodes <- c()
+        for(each in file_list){
+          print(each)
+          barcode <- str_split(each, "_")[[1]][1]
+          barcodes <- append(barcodes, barcode)
+        }
+        
+        print(paste0('barcodes:',barcodes))
+        updateSelectizeInput(session, 'clustered_mut_barcodes', choices = barcodes, server = TRUE)
       }else{
         if(input$project_code == "Sherlock_TCGA"){
           updateSelectizeInput(session, 'clustered_mut_barcodes', choices = unique(sherlock_data_full$Tumor_Barcode), server = TRUE)
         }
       }
-
-     
+      
+      output$figure_pdf_clustered_mut <-  renderImage({list(src=paste0("Mutational_Signatures/Clustered_Mutations/",input$clustered_mut_barcodes, "_Mutation_Clustering.png"),width="1500px", height = "auto", alt=paste0("Tumor Barcode: ",input$tumor_barcode_to_inspect_genomePlot))}, deleteFile = FALSE)
+      #output$genomePlot_figure <- renderImage({list(src=paste0("Genomic_Landscape/",tumor_barcode_to_inspect_genomePlot_reactive()),width="800px", height = "auto", alt=paste0("Tumor Barcode: ",input$tumor_barcode_to_inspect_genomePlot))}, deleteFile = FALSE)
     }
-    
   })
+  
+  # figure_output_clustered_mut <- reactive({
+  #   req(input$clustered_mut_barcodes)
+  #   tumor_barcode = input$clustered_mut_barcodes
+  #   if(!is.null(input$project_code)){ # project included in the app
+  #     project_code <- input$project_code
+  #   }else{ # user project
+  #     project_code <- 'User_project'
+  #   }
+  #   if(os_detect() %in% c("Linux","Darwin")){
+  #     return(figure_display_clustered_mut(tumor_barcode, project_code))
+  #   }else{
+  #     return(src=figure_display_clustered_mut(tumor_barcode, project_code))
+  #   }
+  # 
+  # })
 
-  if(os_detect() %in% c("Linux","Darwin")){
-    output$figure_pdf_clustered_mut <-  renderImage({figure_output_clustered_mut()},deleteFile=FALSE)
-  }else{
-    output$figure_pdf_clustered_mut <- renderUI({ tags$iframe(style="height:1000px; width:60%", src= figure_output_clustered_mut())})
-  }
+  # observeEvent(input$submit_int_ext_data,{
+  #   if("Mutational Signatures" %in% file_list_reactive()){
+  #     if(is.null(input$project_code)){
+  #         print(paste0('mut_sigs_files:',list.files('Mutational_Signatures/Clustered_Mutations')))
+  #         file_list <- list.files('Mutational_Signatures/Clustered_Mutations')
+  #         print(file_list)
+  #         barcodes <- c()
+  #         for(each in file_list){
+  #           print(each)
+  #           barcode <- str_split(each, "_")[[1]][1]
+  #           barcodes <- append(barcodes, barcode)
+  #         }
+  # 
+  #         print(paste0('barcodes:',barcodes))
+  #         updateSelectizeInput(session, 'clustered_mut_barcodes', choices = barcodes, server = TRUE)
+  #     }else{
+  #       if(input$project_code == "Sherlock_TCGA"){
+  #         updateSelectizeInput(session, 'clustered_mut_barcodes', choices = unique(sherlock_data_full$Tumor_Barcode), server = TRUE)
+  #       }
+  #     }
+  # 
+  #    
+  #   }
+  #   
+  # })
+  # 
+  # if(os_detect() %in% c("Linux","Darwin")){
+  #   output$figure_pdf_clustered_mut <-  renderImage({figure_output_clustered_mut()},deleteFile=FALSE)
+  # }else{
+  #   output$figure_pdf_clustered_mut <- renderUI({ tags$iframe(style="height:1000px; width:60%", src= figure_output_clustered_mut())})
+  # }
   
 ######### Genomic Landscape ###############################################
 
@@ -1441,36 +1488,56 @@ server <- function(input, output, session){
 
 ######### Clonal Evolution ###############################################
 
-   figure_output_mutationTime <- reactive({
-     req(input$tumor_barcode_mutation_time)
-     tumor_barcode = input$tumor_barcode_mutation_time
-     if(!is.null(input$project_code)){ # project included in the app
-       project_code <- input$project_code
-     }else{ # user project
-       project_code <- 'User_project'
-     }
+  observeEvent(input$submit_int_ext_data,{
+    if("Clonal Evolution" %in% file_list_reactive()){
+      data_mutation_time <- read_delim("Clonal_Evolution/MutationTime_Proportion.txt")
+      updatePickerInput(session, "tumor_barcode_mutation_time","Select one Tumor Barcode:", choices= data_mutation_time %>% pull(1) %>% unique())
+      
+      tumor_barcode_to_inspect_clonal_evolution_reactive <- reactive({
+        req(input$tumor_barcode_mutation_time)
+        print(input$tumor_barcode_mutation_time)
+        #tumor_barcode_to_inspect_clonal_evolution = input$tumor_barcode_mutation_time
+        data_mutation_time$Tumor_Barcode[which(data_mutation_time$Tumor_Barcode==input$tumor_barcode_mutation_time)]
+        
+      })
+      
+      output$figure_pdf_mutation_time <- renderImage({list(src=paste0("Clonal_Evolution/MutationTime/",tumor_barcode_to_inspect_clonal_evolution_reactive(), "_MTime.png"),width="auto", height = "1000px", alt=paste0("Tumor Barcode: ",tumor_barcode_to_inspect_clonal_evolution_reactive()))}, deleteFile = FALSE)
+    }
+  })
+  
+   # figure_output_mutationTime <- reactive({
+   #   req(input$tumor_barcode_mutation_time)
+   #   tumor_barcode = input$tumor_barcode_mutation_time
+   #   if(!is.null(input$project_code)){ # project included in the app
+   #     project_code <- input$project_code
+   #   }else{ # user project
+   #     project_code <- 'User_project'
+   #   }
+   # 
+   #   # if(os_detect() %in% c("Linux","Darwin")){
+   #   #   return(figure_display_mutationTime(tumor_barcode, project_code))
+   #   # }else{
+   #   #   return(src=figure_display_mutationTime(tumor_barcode, project_code))
+   #   # }
+   # 
+   # })
 
-     if(os_detect() %in% c("Linux","Darwin")){
-       return(figure_display_mutationTime(tumor_barcode, project_code))
-     }else{
-       return(src=figure_display_mutationTime(tumor_barcode, project_code))
-     }
+   # observeEvent(input$submit_int_ext_data,{
+   #   if("Clonal Evolution" %in% file_list_reactive()){
+   #     data_mutation_time <- read_delim("Clonal_Evolution/MutationTime_Proportion.txt")
+   #     updatePickerInput(session, "tumor_barcode_mutation_time","Select one Tumor Barcode:", choices= data_mutation_time %>% pull(1) %>% unique())
+   # 
+   #   }
+   # })
 
-   })
-
-   observeEvent(input$submit_int_ext_data,{
-     if("Clonal Evolution" %in% file_list_reactive()){
-       data_mutation_time <- read_delim("Clonal_Evolution/MutationTime_Proportion.txt")
-       updatePickerInput(session, "tumor_barcode_mutation_time","Select one Tumor Barcode:", choices= data_mutation_time %>% pull(1) %>% unique())
-
-     }
-   })
-
-   if(os_detect() %in% c("Linux","Darwin")){
-     output$figure_pdf_mutation_time <-  renderImage({figure_output_mutationTime()},deleteFile=FALSE)
-   }else{
-     output$figure_pdf_mutation_time <- renderUI({ tags$iframe(style="height:1000px; width:60%", src= figure_output_mutationTime())})
-   }
+   # if(os_detect() %in% c("Linux","Darwin")){
+   #   output$figure_pdf_mutation_time <-  renderImage({figure_output_mutationTime()},deleteFile=FALSE)
+   # }else{
+   #   output$figure_pdf_mutation_time <- renderUI({ tags$iframe(style="height:1000px; width:60%", src= figure_output_mutationTime())})
+   # }
+   
+   #output$figure_pdf_mutation_time <- renderImage({list(src=paste0("Genomic_Landscape/",tumor_barcode_to_inspect_genomePlot_reactive()),width="800px", height = "auto", alt=paste0("Tumor Barcode: ",input$tumor_barcode_to_inspect_genomePlot))}, deleteFile = FALSE)
+   #output$figure_pdf_mutation_time <- renderImage({figure_output_mutationTime()},deleteFile=FALSE)
 
 ######### Survival Analysis ###############################################
 
