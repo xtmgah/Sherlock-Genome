@@ -12,10 +12,10 @@ If a user wishes to upload their own data, there is a [Data Requirements spreads
 
 There are also a few video tutorials available to get you started:
 
-1. Downloading the Genomic Data and moving it into the application correctly.
-2. Access the Data Requirements Info tab in the Documentation module.
-3. Uploading user project data.
-3. Demonstration of each module.
+1. [Downloading the Genomic Data and moving it into the application correctly.](https://drive.google.com/file/d/1suDVyHTCmK1qmYtlkZMpigxY-n-aP56x/view?usp=drive_link)
+2. [Access the Data Requirements Info tab in the Documentation module.](https://drive.google.com/file/d/1owj4Rm4qi2Kct1FNvbmDQkyfF1UResMt/view?usp=drive_link)
+3. [Uploading user project data.](https://drive.google.com/file/d/1vsf8Suks8XaCOtIO3vFX0e0n5V_2rgHs/view?usp=drive_link)
+3. [Demonstration of each module.](https://drive.google.com/file/d/16FChQnY3B_6wL0APXafqmuVnyoW7x3YC/view?usp=drive_link) 
 
 ### Get Started Using *Sherlock-Genome*
 
