@@ -6,7 +6,7 @@
 Welcome to *Sherlock-Genome*: A R Shiny App for Genomic Analysis and Visualization! This tool was developed to enable researchers to review and explore project results all in one place, conduct a wide range of genomic analyses, and generate several different types of visualizations. 
 
 ### Documentation, Data Requirements, and Demos
-There is documentation available [here](https://github.com/xtmgah/Sherlock-Genome/wiki). This documentation highlights each module in the app and their functionality, in addition to information on uploading a user's own data.
+There is documentation available [here](https://github.com/xtmgah/Sherlock-Genome/wiki/Documentation-for-Sherlock%E2%80%90Genome). This documentation highlights each module in the app and their functionality, in addition to information on uploading a user's own data.
 
 If a user wishes to upload their own data, there is a [Data Requirements spreadsheet](https://docs.google.com/spreadsheets/d/1XjoYzG1mQQiw0Dqm4shtXPPnJDAmLY4GPHsi1xuazKg/edit#gid=2016382736) that explains each file required for each module, how to generate the files, and what column names are necessary. These data requirements can also be found in the Documentation module of *Sherlock-Genome* under Data Requirement Info.
 
