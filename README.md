@@ -3,7 +3,9 @@
 
 ### Welcome!
 
-Welcome to *Sherlock-Genome*: A R Shiny App for Genomic Analysis and Visualization! This tool was developed to enable researchers to review and explore project results all in one place, conduct a wide range of genomic analyses, and generate several different types of visualizations. 
+Welcome to *Sherlock-Genome*: A R Shiny App for Genomic Analysis and Visualization! This tool was developed to enable researchers to review and explore project results all in one place, conduct a wide range of genomic analyses, and generate several different types of visualizations. Below is a visual of the many modules and functions available in the app:
+
+![Visual of the capabilites of Sherlock-Genome](https://github.com/xtmgah/Sherlock-Genome/blob/master/Documentation_screenshots/Sherlock-Genome_main_figure.png)
 
 ### Documentation, Data Requirements, and Demos
 There is documentation available [here](https://github.com/xtmgah/Sherlock-Genome/wiki/Documentation-for-Sherlock%E2%80%90Genome). This documentation highlights each module in the app and their functionality, in addition to information on uploading a user's own data.
@@ -12,14 +14,14 @@ If a user wishes to upload their own data, there is a [Data Requirements spreads
 
 There are also a few video tutorials available to get you started:
 
-1. [Downloading the Genomic Data and moving it into the application correctly.](https://drive.google.com/file/d/1suDVyHTCmK1qmYtlkZMpigxY-n-aP56x/view?usp=drive_link)
-2. [Access the Data Requirements Info tab in the Documentation module.](https://drive.google.com/file/d/1owj4Rm4qi2Kct1FNvbmDQkyfF1UResMt/view?usp=drive_link)
-3. [Uploading user project data.](https://drive.google.com/file/d/1vsf8Suks8XaCOtIO3vFX0e0n5V_2rgHs/view?usp=drive_link)
-3. [Demonstration of each module.](https://drive.google.com/file/d/16FChQnY3B_6wL0APXafqmuVnyoW7x3YC/view?usp=drive_link) 
+1. Downloading the Genomic Data and moving it into the application correctly.
+2. Access the Data Requirements Info tab in the Documentation module.
+3. Uploading user project data.
+3. Demonstration of each module.
 
 ### Get Started Using *Sherlock-Genome*
 
-To access and use the *Sherlock-Genome* R Shiny App, follow the steps below:
+To access and use the *Sherlock-Genome* R Shiny App, follow the steps below. **Users must have R version of at least 4.0.0 installed.**
 
 #### Install the SKIT package
 
@@ -35,11 +37,14 @@ To access and use the *Sherlock-Genome* R Shiny App, follow the steps below:
 
 #### Run *Sherlock-Genome* on your local machine
 
-1. Download the application repository for the app from GitHub. The repository link can be found [here](https://github.com/xtmgah/Sherlock-Genome.git).
-2. Decompress the file.
+1. Download the application repository for the app from GitHub. The repository link can be found [here](https://github.com/xtmgah/Sherlock-Genome.git). To download the repository, click on the link provided, then click on the green `Code` dropdown near the top right of the screen. Select 'Download ZIP' from the dropdown. Th app zip file will download (most likely to your Downloads folder, unless you have downloads set to be saved elsewhere.)
+2. Go to the folder you downloaded the app zip file to. Decompress the file.
 3. Download the 'Genomic Data' folder from [Google Drive](https://drive.google.com/file/d/11q90cjMoiBzLMTyw7tVuXtYb8Y3T3n8t/view?usp=drive_link) to add into the application.
-4. Locate the 'Genomic Data' folder you just downloaded, unzip it, and move it into the www/ folder in the application.
-5. Open the ui.R file, which can be found in the main Sherlock_Genome directory. 
-6. Check the working directory by using the `getwd()` command. The working directory should be something like: `/path/to/Sherlock_Genome`. If it is not, close R or RStudio and open ui.R again. Or set, the working directory yourself, using the `setwd('/path/to/Sherlock_Genome')`.
+4. Locate the 'Genomic Data' folder you just downloaded, unzip it, and move it into the folder named 'www/' in the application.
+5. Open the ui.R file using R or RStudio, which can be found in the main Sherlock-Genome directory. 
+6. Check the working directory by using the `getwd()` command. The working directory should be something like: `/path/to/Sherlock-Genome-master`. If it is not, close R or RStudio and open ui.R again. Or set, the working directory yourself, using the `setwd('/path/to/Sherlock-Genome-master')`.
 7. Run the app using the `runApp()` command. Or, if using RStudio, you can click the 'Run App' button.
 
+A FEW ADDITIONAL NOTES: 
+1. If you are having trouble getting the app to run initially due to package installation errors, try running lines 6-54 in the ui.R file before running the app.
+2. We suggest opening the app in a browser to open in a browser after initializing the app to run- sometimes the figures are too big to show up in just the app window.
