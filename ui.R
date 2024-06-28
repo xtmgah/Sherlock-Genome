@@ -1,20 +1,10 @@
 
 #Sherlock-Genome: A R Shiny App for Genomic Analysis and Visualization
 
-# Warning messages:
-#   1: In fileDependencies.R(file) :
-#   Failed to parse /private/var/folders/z0/03n38lh1409btl6jtzdq9x49w00fmd/T/RtmpheTtUV/file606e34acd684/Sherlock_Genome_Functions.R ; dependencies in this file will not be discovered.
-# 2: In sprintf(gettext(fmt, domain = domain), ...) :
-#   one argument not used by format 'invalid uid value replaced by that for user 'nobody''
-# 3: invalid uid value replaced by that for user 'nobody' 
-# 4: In sprintf(gettext(fmt, domain = domain), ...) :
-#   one argument not used by format 'invalid gid value replaced by that for user 'nobody''
-# 5: invalid gid value replaced by that for user 'nobody'
-
 # keep adding to this vector when additional packages are required to run the app 
 # packages_req <- c("shiny","shinydashboard", "hrbrthemes", "rlist","tidyverse", "tidyr", "markdown","shinyjs", "ggside","tibble","inspectdf","DT","dplyr","shinyWidgets","stringr","PMCMRplus","ggsci", "ggstatsplot","ggplot2", "ggpubr","cowplot","data.table","forcats","broom","rstudioapi","fs","purrr","scales", "survival", "survminer", "extrafontdb", "purrr") #ggpubr- ggqqplot()
 packages_req <- c("shinybusy", "devtools","BiocManager", "randomcoloR","shinyBS","shinycssloaders","ggrepel","spsComps","bslib", "htmltools", "shiny","shinydashboard", "shinyFiles","hrbrthemes", "rlist","tidyverse", "markdown","shinyjs", "ggside","inspectdf","DT","shinyWidgets","PMCMRplus","ggsci", "ggstatsplot", "ggpubr","cowplot","data.table","broom","rstudioapi","fs","scales", "survival", "survminer", "extrafontdb","ggwordcloud","graphics",'SKIT',"shinydashboardPlus","valr","ggdendro", "circlize", "ggplot2") #BiocManager? ggpubr- ggqqplot()
-packages_req_bioconductor <- c("CNTools", "maftools")
+packages_req_bioconductor <- c("CNTools", "maftools","rtracklayer")
 packages_req_from_github <- c("ReConPlot")
 
 # check for required packages and install those not installed; load all packages required
@@ -376,7 +366,7 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                                                                                    plotOutput("mut_summary_plot")),
                                                                                    column(3, style = "margin-top: 100px;",conditionalPanel(condition = 'input.mut_summary_generate', downloadButton('download_mut_summary', 'Download Plot', class = 'action-buttons-app'))))),
                                                                           #tabPanel( 
-                                                                                   if(os_detect() %in% c("Linux","Darwin")){
+                                                                                   #if(os_detect() %in% c("Linux","Darwin")){
                                                                                      tabPanel(value="tmb_comparison_tab","TMB Comparison", hr(style = "border-top: 1px solid #ffffff;"), 
                                                                                               box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
                                                                                               h4('Generate a tumor mutational burden (TMB) plot of TCGA cohorts against one group or the entire sample population in the project selected. Check the Group checkbox to select a group.'),
@@ -386,23 +376,23 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                                                                                               h4("Input a name to label the project's cohort on the plot. Otherwise, it will be labeled 'Cohort'."),textInput("tmb_cohort_name", "Cohort Name", value = "Cohort", placeholder = "Project Name or Group"),
                                                                                               actionButton("tmb_plot_generate", "Generate TMB Plot", class = 'action-buttons-app')),
                                                                                               tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),imageOutput("figure_pdf_tmb",width = "50%",height = "50%"),
-                                                                                              conditionalPanel(condition = "input.tmb_plot_generate", downloadButton("download_tmb_plot","Download Plot",class = 'action-buttons-app')))
+                                                                                              conditionalPanel(condition = "input.tmb_plot_generate", downloadButton("download_tmb_plot","Download Plot",class = 'action-buttons-app'))),
                                                                                               
-                                                                                   }else{
-                                                                                     tabPanel(value="tmb_comparison_tab","TMB Comparison", hr(style = "border-top: 1px solid #ffffff;"), 
-                                                                                              box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE, 
-                                                                                                  h4('Generate a tumor mutational burden (TMB) plot of TCGA cohorts against one group or the entire sample population in the project selected. Check the Group checkbox to select a group.'),
-                                                                                                  #checkboxInput("tmb_sp_group", "Group", value=FALSE),
-                                                                                                  prettyCheckbox("tmb_sp_group", "Group",value = FALSE, inline = TRUE, status = "primary",shape = "curve", fill = TRUE, bigger = TRUE),
-                                                                                                  conditionalPanel(condition="input.tmb_sp_group == true", selectInput("tmb_group", label= "Select a group:", choices= NULL, multiple=FALSE)),
-                                                                                                  h4("Input a name to label the project's cohort on the plot. Otherwise, it will be labeled 'Cohort'."),textInput("tmb_cohort_name", "Cohort Name", value = "Cohort", placeholder = "Project Name or Group"),
-                                                                                                  actionButton("tmb_plot_generate", "Generate TMB Plot", class = 'action-buttons-app')),
-                                                                                                  tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),imageOutput("figure_pdf_tmb",width = "50%",height = "50%"),
-                                                                                                  conditionalPanel(condition = "input.tmb_plot_generate", actionButton("download_tmb_plot","Download Plot", class = 'action-buttons-app')))
-                                                                                              
-                                                                                   },
+                                                                                   #}else{
+                                                                                   # tabPanel(value="tmb_comparison_tab","TMB Comparison", hr(style = "border-top: 1px solid #ffffff;"),
+                                                                                   #          box(width = 12, title = 'Instructions and Inputs', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE,
+                                                                                   #              h4('Generate a tumor mutational burden (TMB) plot of TCGA cohorts against one group or the entire sample population in the project selected. Check the Group checkbox to select a group.'),
+                                                                                   #              #checkboxInput("tmb_sp_group", "Group", value=FALSE),
+                                                                                   #              prettyCheckbox("tmb_sp_group", "Group",value = FALSE, inline = TRUE, status = "primary",shape = "curve", fill = TRUE, bigger = TRUE),
+                                                                                   #              conditionalPanel(condition="input.tmb_sp_group == true", selectInput("tmb_group", label= "Select a group:", choices= NULL, multiple=FALSE)),
+                                                                                   #              h4("Input a name to label the project's cohort on the plot. Otherwise, it will be labeled 'Cohort'."),textInput("tmb_cohort_name", "Cohort Name", value = "Cohort", placeholder = "Project Name or Group"),
+                                                                                   #              actionButton("tmb_plot_generate", "Generate TMB Plot", class = 'action-buttons-app')),
+                                                                                   #              tags$head(tags$style(type="text/css","#figure img {max-width:100%; width:100%; height:auto}")),uiOutput("figure_pdf_tmb",width = "50%",height = "50%"),
+                                                                                   #              conditionalPanel(condition = "input.tmb_plot_generate", actionButton("download_tmb_plot","Download Plot", class = 'action-buttons-app')))
+                                                                                   # 
+                                                                                   # },
                                                                                    #conditionalPanel('input.tmb_plot_generate', actionButton('download_tmb_plot',"Download Plot"))),
-                                                                          tabPanel(value="lolliplot_tab", "Lollipop Plot",hr(style = "border-top: 1px solid #ffffff;"),
+                                                                          tabPanel(value="lolliplot_tab", "Lolliplot",hr(style = "border-top: 1px solid #ffffff;"),
                                                                                                        #tags$ol(tags$li("Begin by entering a gene name to create the plot for.",tags$i("Note: the gene name input is case-sensitive.")),
                                                                                                              #  tags$li("Select 'Group' if desired using the checkbox. A dropdown list of group choices will appear that is specific to the project and its corresponding data."),
                                                                                                              #  tags$li("Click 'Select Transcript' to select a transcript that includes data for the gene input", tags$i("You cannot select a transcript until entering a gene name.")),
@@ -658,7 +648,7 @@ dashboardSidebar(sidebarMenu(id = "sbmenu",
                                                                                                         column(3, style = "margin-top: 75px;",conditionalPanel(condition = "input.generate_fisher_barplot", downloadButton("download_fisher_bar_plot_only","Download Plot", class = 'action-buttons-app')))))),
 
                                                                                                  tabPanel(value="association_test_main", "Association Testing",hr(style = "border-top: 1px solid #ffffff;"), box(width = 12, title = 'Instructions and Data Selection', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE,
-                                                                                                                                                                   h4('Select a maximum of two datasets from the list below to conduct bivariable or multivariable association analyses. After selecting the data, the Data Selected box will populate with the data selected and its dimensions.'),
+                                                                                                                                                                   h4('Select from a maximum of two datasets below to conduct bivariable or multivariable association analyses. After selecting the data, the Data Selected box will populate with the data selected and its dimensions.'),
                                                                                                                                                                    uiOutput("data_list_association"),actionButton("load_datasets", "Load Datasets", class = 'action-buttons-app')),
                                                                                                                                                                     box(width = 12, title = 'Data Selected', status = 'primary', solidHeader = TRUE, collapsed = FALSE, collapsible = TRUE,conditionalPanel(condition="input.load_datasets",tags$header(strong("Selected Data Dimensions")), tableOutput("assoc_datatable_dim"), tags$header(strong(textOutput("assoc_data_join_by"))), textOutput("assoc_no_tum_barcode"), uiOutput("assoc_dropdown")), DT::dataTableOutput("assoc_datatable")),
                                                                                                     tabsetPanel(id="association_testing",

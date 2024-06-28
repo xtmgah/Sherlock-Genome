@@ -25,10 +25,10 @@ server <- function(input, output, session){
     tmb_cohort_name <- isolate(input$tmb_cohort_name)
     print(file.exists(paste0('www/Genomic Data/', project_code, '/', project_code, '_', tmb_cohort_name,'_tmb.pdf')))
     
-    if(file.exists(paste0('www/Genomic Data/', project_code, '/', project_code, '_', tmb_cohort_name,'_tmb.pdf'))){
-      unlink(paste0('www/Genomic Data/', project_code, '/', project_code, '_', tmb_cohort_name,'_tmb.pdf'))
-      unlink(paste0('www/Genomic Data/', project_code, '/Rplots.pdf'))
-    }
+    # if(file.exists(paste0('www/Genomic Data/', project_code, '/', project_code, '_', tmb_cohort_name,'_tmb.pdf'))){
+    #   unlink(paste0('www/Genomic Data/', project_code, '/', project_code, '_', tmb_cohort_name,'_tmb.pdf'))
+    #   unlink(paste0('www/Genomic Data/', project_code, '/Rplots.pdf'))
+    # }
 
   })
   
@@ -890,20 +890,22 @@ server <- function(input, output, session){
   
   })
 
-  figure_output_tmb <- reactive({
-    if(is.null(input$project_code)){
-      project_code = 'User_Project'
-    }else{
-      project_code = input$project_code
-    }
-    cohortName = input$tmb_cohort_name
-    filename = paste0(project_code, '_', cohortName,'_tmb.pdf')
-    if(os_detect() %in% c("Linux","Darwin")){
-      return(figure_display_tmb(filename))
-    }else{
-      return(src=figure_display_tmb(filename))
-    }
-  })
+  # figure_output_tmb <- reactive({
+  #   if(is.null(input$project_code)){
+  #     project_code = 'User_Project'
+  #   }else{
+  #     project_code = input$project_code
+  #   }
+  #   cohortName = input$tmb_cohort_name
+  #   filename = paste0(project_code, '_', cohortName,'_tmb.pdf')
+  #   print(paste0('filename_TMB:', getwd()))
+  #   
+  #   if(os_detect() %in% c("Linux","Darwin")){
+  #     return(figure_display_tmb(filename))
+  #   }else{
+  #     return(src=figure_display_tmb(filename))
+  #   }
+  # })
 
   observeEvent(input$submit_int_ext_data,{
     if("Mutations" %in% file_list_reactive()){
@@ -924,15 +926,33 @@ server <- function(input, output, session){
   observeEvent(input$tmb_plot_generate,{
     print('here now')
     
-    tmb_plot_reactive()
-    if(os_detect() %in% c("Linux","Darwin")){
-      output$figure_pdf_tmb <-  renderImage({figure_output_tmb()},deleteFile=FALSE)
+    if(is.null(input$project_code)){
+      project_code <- 'User_Project'
     }else{
-      output$figure_pdf_tmb <- renderUI({ tags$iframe(style="height:1000px; width:60%", src= figure_output_tmb())})
+      project_code <- input$project_code
     }
 
-  })
+    cohortName = input$tmb_cohort_name
+
+    filename = paste0(project_code, '_', cohortName,'_tmb.pdf')
+    print(filename)
+
+    tmb_plot_reactive()
+
+    # if(os_detect() %in% c("Linux","Darwin")){
+    #   output$figure_pdf_tmb <-  renderImage({filename},deleteFile=FALSE)
+    # }else{
+    #   output$figure_pdf_tmb <- renderUI({tags$iframe(style="height:1000px; width:60%", src= filename)})
+    # }
+    # 
+    # tmb_plot_reactive() 
+    
+    #print(getwd())
+    
+    output$figure_pdf_tmb <- renderImage({list(src=filename,width="800px", height = "auto", alt=filename)}, deleteFile = FALSE)
+    })
   
+
   output$download_tmb_plot = downloadHandler(
 
     filename = function() {
@@ -950,7 +970,7 @@ server <- function(input, output, session){
 
     content = function(theFile) {
       tmb_plot_reactive()
-      unlink("./Rplots.pdf", recursive = FALSE)
+      #unlink("./Rplots.pdf", recursive = FALSE)
       if(is.null(input$project_code)){
         project_code <- 'User_Project'
       }else{

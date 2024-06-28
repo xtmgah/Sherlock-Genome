@@ -573,22 +573,22 @@ inspect_data_function <- function(dataframe, type_of_inspection=NULL,column_name
 #   }
 # }
 
-figure_display_tmb <- function(filename){
-  file_path <- paste0("./", filename)
-  print(file_path)
-  
-  if(os_detect() %in% c("Linux","Darwin")){
-    filename <- file_path
-    print(getwd())
-    # print(filename)
-    list(src = filename, alt = filename)
-  }else{
-    filename <- file_path
-    print(getwd())
-    print(filename)
-    return(filename)
-  }
-}
+# figure_display_tmb <- function(filename){
+#   file_path <- paste0("./", filename)
+#   print(paste0('file path:', file_path))
+# 
+#   if(os_detect() %in% c("Linux","Darwin")){
+#     #filename <- file_path
+#     print(getwd())
+#     # print(filename)
+#     list(src = filename, alt = filename)
+#   }else{
+#     filename <- file_path
+#     print(getwd())
+#     print(filename)
+#     return(filename)
+#   }
+# }
 
 
 # figure_display_scna_gistic <- function(amp_or_del){
@@ -3321,6 +3321,7 @@ tcgaCompareWGS2 <- function (project_code, maf.mutload, capture_size = NULL, tcg
                                                                                "black"), bg_col = c("#EDF8B1", "#2C7FB8"), medianCol = "red", 
                              logscale = TRUE, rm_hyper = FALSE,tcga_cohorts_file=NULL,cohortsize=NULL) 
 {
+  #print('in the TCGA compare function now')
   par(family = "Roboto Condensed")
   if(is.null(tcga_cohorts_file)){
     top('Please provide TCGA cohort file!!!')
@@ -3500,6 +3501,7 @@ tcgaCompareWGS2 <- function (project_code, maf.mutload, capture_size = NULL, tcg
   box()
   dev.off()
   #tcga.cohort.med
+  #print('finished generating TMB plot for query')
 }
 
 
